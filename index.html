@@ -1,0 +1,532 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RK Draft List & Double Elimination</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body { 
+            background-color: #000000; 
+            background-image: linear-gradient(rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.8)), url('Wallpaper_01.png');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            background-repeat: no-repeat;
+        }
+        .timer-low { color: #ff4b4b; animation: pulse 1s infinite; }
+        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
+        .selected-glow { box-shadow: 0 0 20px rgba(34, 197, 94, 0.3); border-color: #22c55e !important; }
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar-track { background: rgba(0,0,0,0.5); }
+        ::-webkit-scrollbar-thumb { background: #166534; border-radius: 4px; }
+    </style>
+</head>
+<body class="text-white min-h-screen p-4 font-sans">
+
+    <div id="setup-screen" class="max-w-3xl mx-auto bg-zinc-900/90 backdrop-blur-sm p-8 rounded-xl shadow-2xl mt-10 border border-green-900/50">
+        <h1 class="text-3xl font-bold mb-2 text-green-500">RK Draft List</h1>
+        <p class="mb-6 text-zinc-400 text-sm">Cole a lista com exatamente 20 jogadores (4 de cada lane) para formar 4 times.</p>
+        
+        <div class="bg-black/50 p-5 rounded-lg border border-green-900/30 mb-6 flex items-start gap-4">
+            <div class="text-green-500 mt-1">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-6 h-6">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M11.25 11.25l.041-.02a.75.75 0 011.063.852l-.708 2.836a.75.75 0 001.063.853l.041-.021M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9-3.75h.008v.008H12V8.25z" />
+                </svg>
+            </div>
+            <div>
+                <h3 class="text-green-500 font-bold mb-1 text-sm uppercase tracking-wide">Regras do Torneio</h3>
+                <p class="text-zinc-300 text-sm leading-relaxed">
+                    <strong class="text-white">Capitães:</strong> A rota com os elos mais altos somados será definida como a rota dos capitães (Rota Mais Parelha).<br>
+                    <strong class="text-white">Formação:</strong> Modo Draft (Escolha), onde os capitães escolhem seus membros em turnos.
+                </p>
+            </div>
+        </div>
+
+        <textarea id="player-list" class="w-full h-64 p-4 bg-black/80 border border-green-900/30 rounded-lg mb-6 font-mono text-sm focus:border-green-500 outline-none transition text-green-100 whitespace-pre" placeholder="Exemplo:
+TOP - Fulano CHALLENGER
+JG - Ciclano DIAMANTE
+MID - Beltrano GOLD
+ADC - JogadorX PLATINA
+SUP - JogadorY GM
+
+(Adicione todos os 20 jogadores, 4 de cada rota)"></textarea>
+        <button onclick="analyzeList()" class="w-full bg-green-600 hover:bg-green-500 py-4 rounded-lg font-bold text-lg transition shadow-lg text-black">Processar Jogadores</button>
+    </div>
+
+    <div id="confirm-screen" class="hidden max-w-4xl mx-auto bg-zinc-900/90 backdrop-blur-sm p-8 rounded-xl shadow-2xl mt-10 text-center border border-green-800">
+        <h2 class="text-2xl font-bold mb-2 text-green-500">Capitães Definidos</h2>
+        <p class="text-zinc-400 mb-6 italic">Total de Times: <span id="team-count-display" class="font-bold text-white">4 Times</span></p>
+        <div id="captain-preview" class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8"></div>
+        <div class="flex gap-4">
+            <button onclick="backToSetup()" class="flex-1 bg-zinc-800/90 hover:bg-zinc-700 py-3 rounded-lg font-bold border border-zinc-700">Voltar</button>
+            <button onclick="startProcess()" class="flex-1 bg-green-600 hover:bg-green-500 py-3 rounded-lg font-bold shadow-lg text-black" id="btn-start-process">Iniciar Draft</button>
+        </div>
+    </div>
+
+    <div id="draft-screen" class="hidden max-w-7xl mx-auto py-6">
+        <div class="flex flex-col md:flex-row justify-between items-center mb-8 gap-4">
+            <div>
+                <h2 class="text-2xl font-bold">
+                    Draft
+                </h2>
+                <p id="remaining-count" class="text-zinc-400 text-sm italic"></p>
+            </div>
+            <div id="timer-display" class="text-5xl font-mono font-bold bg-black/80 backdrop-blur-sm px-8 py-3 rounded-xl border-2 border-green-600 shadow-[0_0_15px_rgba(34,197,94,0.2)] text-green-500">30s</div>
+        </div>
+
+        <div id="turn-indicator" class="text-center mb-8 p-6 bg-green-900/20 backdrop-blur-sm border border-green-500/30 rounded-2xl">
+            <p class="text-green-500 uppercase tracking-widest text-xs font-bold mb-1">Agora é a vez de:</p>
+            <span class="text-3xl font-black text-white" id="current-captain-name">---</span>
+        </div>
+
+        <div class="grid gap-4 mb-10" id="teams-container" style="grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));"></div>
+
+        <div class="border-t border-green-900/50 pt-6">
+            <h3 class="text-xl font-bold mb-6 text-zinc-400 flex items-center gap-2 underline decoration-green-500 underline-offset-8">
+                Jogadores Disponíveis
+            </h3>
+            <div id="available-players" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3"></div>
+        </div>
+    </div>
+
+    <div id="result-screen" class="hidden max-w-7xl mx-auto text-center py-10">
+        <h1 class="text-5xl font-black mb-4 text-white tracking-tighter italic">TIMES <span class="text-green-500">FORMADOS</span></h1>
+        <div id="final-teams" class="grid gap-6 text-left" style="grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));"></div>
+        
+        <div class="mt-12 flex justify-center gap-6">
+            <button onclick="location.reload()" class="bg-zinc-800 hover:bg-zinc-700 px-8 py-4 rounded-full font-bold transition-all border border-zinc-700 text-white">Resetar Tudo</button>
+            <button onclick="startTournament()" class="bg-green-600 hover:bg-green-500 px-10 py-4 rounded-full font-bold transition-all transform hover:scale-105 shadow-xl text-black">Gerar Chaveamento Double Elim.</button>
+        </div>
+    </div>
+
+    <div id="bracket-screen" class="hidden max-w-[95vw] mx-auto py-10">
+        <h1 class="text-4xl font-black mb-2 text-center text-green-500 tracking-tighter italic">DOUBLE ELIMINATION</h1>
+        <p class="text-zinc-400 text-center mb-10">Todos os jogos são MD1, exceto a Grande Final (MD3). Clique em um time para defini-lo como vencedor da partida.</p>
+        
+        <div id="bracket-container" class="flex flex-col md:flex-row justify-center items-start gap-12 overflow-x-auto pb-24 px-4">
+        </div>
+        
+        <div class="sticky bottom-6 mt-4 flex flex-wrap justify-center gap-4 bg-black/90 p-4 rounded-2xl backdrop-blur-md border border-zinc-800 z-50 shadow-[0_0_30px_rgba(0,0,0,0.8)] mx-auto max-w-4xl">
+            <button onclick="exportToCSV()" class="bg-green-700 hover:bg-green-600 px-6 py-3 rounded-full font-bold border border-green-600 text-white shadow-lg transition-all flex-1 text-sm md:text-base">📥 Exportar Planilha de Resultados</button>
+            <button onclick="resetBracket()" class="bg-yellow-600 hover:bg-yellow-500 px-6 py-3 rounded-full font-bold border border-yellow-700 text-black shadow-lg transition-all flex-1 text-sm md:text-base">Redefinir Chaveamento</button>
+            <button onclick="location.reload()" class="bg-zinc-800 hover:bg-zinc-700 px-6 py-3 rounded-full font-bold border border-zinc-700 text-white flex-1 text-sm md:text-base">Encerrar e Novo Draft</button>
+        </div>
+    </div>
+
+    <script>
+    let allPlayers = [];
+    let playersPool = [];
+    let captains = [];
+    let teams = [];
+    const numTeams = 4;
+    
+    let turnIndex = 0;
+    let snakeCycle = [];
+    let timer;
+    let timeLeft = 30;
+
+    // Dicionário atualizado para suportar variações e abreviações
+    const tierWeights = { 
+        'CHALL': 10, 'CHALLENGER': 10, 'DESAFIANTE': 10,
+        'GM': 9, 'GRAO MESTRE': 9, 'GRÃO MESTRE': 9, 'GRAO-MESTRE': 9, 'GRANDMASTER': 9,
+        'MESTRE': 8, 'MASTER': 8,
+        'DIMA': 7, 'DIAMANTE': 7, 'DIAMOND': 7,
+        'ESMERALDA': 6, 'EMERALD': 6,
+        'PLATINA': 5, 'PLATINUM': 5, 'PLAT': 5,
+        'OURO': 4, 'GOLD': 4,
+        'PRATA': 3, 'SILVER': 3,
+        'BRONZE': 2, 
+        'FERRO': 1, 'IRON': 1
+    };
+
+    let dBracket = {
+        m1: { id: 'm1', title: "(1) Semifinal Superior (MD1)", t1: null, t2: null, winner: null, loser: null },
+        m2: { id: 'm2', title: "(2) Semifinal Superior (MD1)", t1: null, t2: null, winner: null, loser: null },
+        m3: { id: 'm3', title: "(3) Final Superior (MD1)", t1: null, t2: null, winner: null, loser: null },
+        m4: { id: 'm4', title: "(4) Semifinal Inferior (MD1)", t1: null, t2: null, winner: null, loser: null },
+        m5: { id: 'm5', title: "(5) Final Inferior (MD1)", t1: null, t2: null, winner: null, loser: null },
+        m6: { id: 'm6', title: "GRANDE FINAL (MD3)", t1: null, t2: null, winner: null, loser: null }
+    };
+
+    function shuffle(array) {
+        let arr = [...array];
+        for (let i = arr.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [arr[i], arr[j]] = [arr[j], arr[i]];
+        }
+        return arr;
+    }
+
+    function analyzeList() {
+        const text = document.getElementById('player-list').value;
+        const lines = text.split('\n').filter(l => l.trim() !== '');
+        const laneGroups = { TOP: [], JG: [], MID: [], ADC: [], SUP: [] };
+        allPlayers = [];
+
+        // Regex atualizado para capturar as variações adicionadas
+        const regex = /^(TOP|JG|MID|ADC|SUP)\s*[-–—]\s*(.+?)\s+(CHALL|CHALLENGER|DESAFIANTE|GM|GRÃO MESTRE|GRAO MESTRE|GRAO-MESTRE|GRANDMASTER|MESTRE|MASTER|DIMA|DIAMANTE|DIAMOND|ESMERALDA|EMERALD|PLATINA|PLATINUM|PLAT|OURO|GOLD|PRATA|SILVER|BRONZE|FERRO|IRON)$/i;
+
+        lines.forEach((line, index) => {
+            const match = line.trim().match(regex);
+            if (match) {
+                const p = { 
+                    id: index, name: match[2].trim(), tier: match[3].toUpperCase(), 
+                    lane: match[1].toUpperCase(), weight: tierWeights[match[3].toUpperCase()] || 0 
+                };
+                laneGroups[p.lane].push(p);
+                allPlayers.push(p);
+            }
+        });
+
+        if (allPlayers.length !== 20) {
+            alert(`Atenção: Você forneceu ${allPlayers.length} jogadores válidos, mas este formato exige exatamente 20 jogadores (4 times completos).`);
+            return;
+        }
+
+        let errors = [];
+        Object.keys(laneGroups).forEach(lane => {
+            if (laneGroups[lane].length !== 4) errors.push(`A lane ${lane} tem ${laneGroups[lane].length} jogadores (precisa de 4).`);
+        });
+
+        if (errors.length > 0) {
+            alert(`Para formar 4 times perfeitos, você precisa de exatamente 4 jogadores em cada lane.\n\nErros:\n- ` + errors.join('\n- '));
+            return;
+        }
+
+        // Seleção de Capitães (Fixo: Rota Mais Parelha)
+        let bestLane = 'TOP';
+        let maxScore = -1;
+        
+        Object.keys(laneGroups).forEach(lane => {
+            let laneScore = laneGroups[lane].reduce((sum, p) => sum + p.weight, 0);
+            if (laneScore > maxScore) {
+                maxScore = laneScore;
+                bestLane = lane;
+            }
+        });
+
+        captains = [...laneGroups[bestLane]].sort((a, b) => b.weight - a.weight);
+        let extraDisplayInfo = ` &mdash; <span class="text-green-400 font-black">Rota Chefe: ${bestLane} (${maxScore} Pts)</span>`;
+
+        document.getElementById('team-count-display').innerHTML = `4 Times${extraDisplayInfo}`;
+        
+        document.getElementById('captain-preview').innerHTML = captains.map((c, idx) => `
+            <div class="bg-black/60 p-4 rounded-lg border border-green-900 text-left">
+                <div class="text-[10px] text-green-500 font-bold uppercase tracking-widest">Time ${idx + 1}</div>
+                <div class="font-bold text-lg text-white truncate">${c.name}</div>
+                <div class="text-[10px] text-zinc-400 uppercase mt-1">${c.lane} - ${c.tier}</div>
+            </div>
+        `).join('');
+
+        document.getElementById('setup-screen').classList.add('hidden');
+        document.getElementById('confirm-screen').classList.remove('hidden');
+    }
+
+    function backToSetup() {
+        document.getElementById('confirm-screen').classList.add('hidden');
+        document.getElementById('setup-screen').classList.remove('hidden');
+    }
+
+    function startProcess() {
+        const laneGroups = { TOP: [], JG: [], MID: [], ADC: [], SUP: [] };
+        allPlayers.forEach(p => laneGroups[p.lane].push(p));
+        
+        let exactPool = [];
+        Object.keys(laneGroups).forEach(lane => exactPool = exactPool.concat(laneGroups[lane].slice(0, numTeams)));
+
+        teams = Array.from({ length: numTeams }, () => []);
+        const capIds = captains.map(c => c.id);
+        
+        captains.forEach((cap, i) => teams[i].push(cap));
+        playersPool = exactPool.filter(p => !capIds.includes(p.id));
+
+        startDraft();
+    }
+
+    function generateSnakeCycle(n) {
+        let c = [];
+        for(let i = 0; i < n; i++) c.push(i);
+        for(let i = n - 1; i >= 0; i--) c.push(i);
+        return c;
+    }
+
+    function startDraft() {
+        turnIndex = 0;
+        snakeCycle = generateSnakeCycle(numTeams);
+        document.getElementById('confirm-screen').classList.add('hidden');
+        document.getElementById('draft-screen').classList.remove('hidden');
+        nextTurnLogic(); 
+    }
+
+    function nextTurnLogic() {
+        if (playersPool.length === 0 || teams.every(t => t.length >= 5)) return showResults();
+        
+        const curIdx = snakeCycle[turnIndex % snakeCycle.length];
+        if (teams[curIdx].length >= 5) { turnIndex++; return nextTurnLogic(); }
+
+        renderDraft();
+        startTimer();
+    }
+
+    function startTimer() {
+        clearInterval(timer);
+        timeLeft = 30;
+        document.getElementById('timer-display').innerText = "30s";
+        timer = setInterval(() => {
+            timeLeft--;
+            document.getElementById('timer-display').innerText = timeLeft + 's';
+            if (timeLeft <= 0) { clearInterval(timer); autoPick(); }
+        }, 1000);
+    }
+
+    function autoPick() {
+        const curIdx = snakeCycle[turnIndex % snakeCycle.length];
+        const validP = playersPool.find(p => !teams[curIdx].some(tp => tp.lane === p.lane));
+        if (validP) pickPlayer(validP.id);
+        else showResults();
+    }
+
+    function pickPlayer(pId) {
+        const pIdx = playersPool.findIndex(p => p.id === pId);
+        if (pIdx === -1) return;
+        const curIdx = snakeCycle[turnIndex % snakeCycle.length];
+        teams[curIdx].push(playersPool.splice(pIdx, 1)[0]);
+        checkAutoPicks();
+        turnIndex++;
+        nextTurnLogic();
+    }
+
+    function checkAutoPicks() {
+        let changed;
+        do {
+            changed = false;
+            ['TOP', 'JG', 'MID', 'ADC', 'SUP'].forEach(lane => {
+                const rem = playersPool.filter(p => p.lane === lane);
+                if (rem.length === 1) {
+                    const tIdx = teams.findIndex(t => t.length < 5 && !t.some(p => p.lane === lane));
+                    if (tIdx !== -1) {
+                        teams[tIdx].push(rem[0]);
+                        playersPool = playersPool.filter(pl => pl.id !== rem[0].id);
+                        changed = true;
+                    }
+                }
+            });
+        } while (changed);
+    }
+
+    function renderDraft() {
+        const curIdx = snakeCycle[turnIndex % snakeCycle.length];
+        document.getElementById('current-captain-name').innerHTML = `${captains[curIdx].name}`;
+        document.getElementById('remaining-count').innerHTML = `<span class="font-bold text-green-500">${playersPool.length}</span> restantes`;
+
+        document.getElementById('teams-container').innerHTML = teams.map((t, i) => `
+            <div class="bg-zinc-900/90 p-5 rounded-xl border-2 ${i === curIdx ? 'border-green-500 scale-105 shadow-[0_0_15px_rgba(34,197,94,0.3)]' : 'border-zinc-800 opacity-80'}">
+                <h4 class="font-black text-green-500 mb-4 text-sm">Time ${captains[i].name}</h4>
+                ${['TOP', 'JG', 'MID', 'ADC', 'SUP'].map(l => {
+                    const p = t.find(pl => pl.lane === l);
+                    return `<div class="flex justify-between text-[11px] border-b border-zinc-800/50 pb-1">
+                        <span class="font-bold text-zinc-400">${l}</span>
+                        <span class="truncate ml-2 ${p ? 'text-white' : 'text-zinc-600'}">${p ? p.name : 'Vago'}</span>
+                    </div>`;
+                }).join('')}
+            </div>`).join('');
+
+        document.getElementById('available-players').innerHTML = playersPool.map(p => {
+            const block = teams[curIdx].some(tp => tp.lane === p.lane);
+            return `<button onclick="${block ? '' : `pickPlayer(${p.id})`}" class="p-3 rounded-lg text-left border ${block ? 'bg-black/60 border-red-900/30 opacity-40 cursor-not-allowed' : 'bg-zinc-900/80 border-zinc-800 hover:border-green-500'}">
+                <span class="block text-[10px] font-bold ${block ? 'text-red-500' : 'text-green-500'} uppercase">${p.lane}</span>
+                <div class="text-sm font-bold truncate ${block ? 'text-zinc-500' : 'text-white'}">${p.name}</div>
+            </button>`;
+        }).join('');
+    }
+
+    function showResults() {
+        clearInterval(timer);
+        document.getElementById('draft-screen').classList.add('hidden');
+        document.getElementById('result-screen').classList.remove('hidden');
+        document.getElementById('final-teams').innerHTML = teams.map((t, i) => `
+            <div class="bg-zinc-900 p-6 rounded-2xl border border-green-900/30">
+                <h3 class="text-2xl font-black text-white text-center mb-6">${captains[i].name}</h3>
+                ${['TOP', 'JG', 'MID', 'ADC', 'SUP'].map(l => {
+                    const p = t.find(pl => pl.lane === l);
+                    return `<div class="flex justify-between border-b border-zinc-800/50 pb-2 mb-2">
+                        <span class="font-bold text-zinc-400 text-xs">${l}</span>
+                        <div class="text-sm font-bold ${!p ? 'text-red-500' : 'text-white'}">${p ? p.name : 'Vago'}</div>
+                    </div>`;
+                }).join('')}
+            </div>`).join('');
+    }
+
+    function startTournament() {
+        document.getElementById('result-screen').classList.add('hidden');
+        document.getElementById('bracket-screen').classList.remove('hidden');
+        
+        let bTeams = teams.map((t, idx) => ({ id: idx, name: "T." + captains[idx].name }));
+        bTeams = shuffle(bTeams);
+
+        dBracket.m1.t1 = bTeams[0]; dBracket.m1.t2 = bTeams[1];
+        dBracket.m2.t1 = bTeams[2]; dBracket.m2.t2 = bTeams[3];
+
+        updateDoubleElimination();
+    }
+
+    function setMatchWinner(mId, teamNum) {
+        let m = dBracket[mId];
+        if (!m.t1 || !m.t2) return; 
+        
+        // Impede a alteração se a partida já tem um vencedor
+        if (m.winner) return;
+
+        m.winner = teamNum === 1 ? m.t1 : m.t2;
+        m.loser = teamNum === 1 ? m.t2 : m.t1;
+        updateDoubleElimination();
+    }
+
+    function updateDoubleElimination() {
+        let b = dBracket;
+
+        // 1. Resolvemos m3 e m4 limpando e puxando ESTRITAMENTE de m1 e m2
+        b.m3.t1 = b.m1.winner || null;
+        b.m4.t1 = b.m1.loser || null;
+        b.m3.t2 = b.m2.winner || null;
+        b.m4.t2 = b.m2.loser || null;
+
+        if (b.m3.winner && (b.m3.winner.id !== b.m3.t1?.id && b.m3.winner.id !== b.m3.t2?.id)) { b.m3.winner = null; b.m3.loser = null; }
+        if (b.m4.winner && (b.m4.winner.id !== b.m4.t1?.id && b.m4.winner.id !== b.m4.t2?.id)) { b.m4.winner = null; b.m4.loser = null; }
+
+        // 2. Resolvemos m5 limpando e puxando ESTRITAMENTE de m4 (winner) e m3 (loser)
+        b.m5.t1 = b.m4.winner || null;
+        b.m5.t2 = b.m3.loser || null;
+
+        if (b.m5.winner && (b.m5.winner.id !== b.m5.t1?.id && b.m5.winner.id !== b.m5.t2?.id)) { b.m5.winner = null; b.m5.loser = null; }
+
+        // 3. Resolvemos m6 limpando e puxando ESTRITAMENTE de m3 (winner) e m5 (winner)
+        b.m6.t1 = b.m3.winner || null;
+        b.m6.t2 = b.m5.winner || null;
+
+        if (b.m6.winner && (b.m6.winner.id !== b.m6.t1?.id && b.m6.winner.id !== b.m6.t2?.id)) { b.m6.winner = null; b.m6.loser = null; }
+
+        renderDoubleElimination();
+    }
+
+    function createMatchCard(mId) {
+        const m = dBracket[mId];
+        
+        const baseClasses1 = m.winner ? 
+            (m.winner.id === m.t1?.id ? 'bg-green-900/60 text-green-400 font-black cursor-default' : 'opacity-40 text-zinc-500 cursor-default') : 
+            'hover:bg-zinc-800 text-zinc-300 cursor-pointer';
+
+        const baseClasses2 = m.winner ? 
+            (m.winner.id === m.t2?.id ? 'bg-green-900/60 text-green-400 font-black cursor-default' : 'opacity-40 text-zinc-500 cursor-default') : 
+            'hover:bg-zinc-800 text-zinc-300 cursor-pointer';
+
+        const btn1 = `p-2 rounded transition ${baseClasses1}`;
+        const btn2 = `p-2 rounded transition ${baseClasses2}`;
+
+        return `
+            <div class="bg-black/90 border ${m.winner ? 'border-green-900/30' : 'border-green-500/60 hover:border-green-400'} rounded-lg p-3 w-56 shadow-lg transition-all z-10 relative">
+                <div class="text-[10px] text-green-500 font-bold mb-2 text-center border-b border-green-900/30 pb-1">${m.title}</div>
+                <div class="${btn1}" onclick="setMatchWinner('${mId}', 1)">
+                    ${m.t1 ? m.t1.name : '<span class="italic text-zinc-700">A Definir</span>'}
+                </div>
+                <div class="border-t border-zinc-800/50 my-1"></div>
+                <div class="${btn2}" onclick="setMatchWinner('${mId}', 2)">
+                    ${m.t2 ? m.t2.name : '<span class="italic text-zinc-700">A Definir</span>'}
+                </div>
+            </div>
+        `;
+    }
+
+    function renderDoubleElimination() {
+        const container = document.getElementById('bracket-container');
+        container.innerHTML = `
+            <div class="flex flex-col gap-8 justify-center">
+                <div class="text-zinc-500 font-bold uppercase text-xs tracking-widest text-center mb-[-10px]">Chave Superior</div>
+                ${createMatchCard('m1')}
+                ${createMatchCard('m2')}
+                
+                <div class="h-8 border-b-2 border-dashed border-zinc-800"></div>
+                
+                <div class="text-zinc-500 font-bold uppercase text-xs tracking-widest text-center mb-[-10px] text-red-900">Chave Inferior</div>
+                ${createMatchCard('m4')}
+            </div>
+
+            <div class="flex flex-col gap-8 justify-start pt-12">
+                ${createMatchCard('m3')}
+                <div class="h-24"></div>
+                ${createMatchCard('m5')}
+            </div>
+
+            <div class="flex flex-row justify-center items-center pt-[150px] gap-8">
+                ${createMatchCard('m6')}
+                ${dBracket.m6.winner ? `
+                    <div class="animate-bounce text-center shrink-0">
+                        <div class="text-5xl mb-2">🏆</div>
+                        <div class="text-green-400 font-black text-2xl text-center shadow-black drop-shadow-md">CAMPEÃO</div>
+                        <div class="text-white font-bold text-xl text-center mt-1 bg-green-900/50 px-6 py-2 rounded-full border border-green-500">${dBracket.m6.winner.name}</div>
+                    </div>
+                ` : ''}
+            </div>
+        `;
+    }
+
+    function resetBracket() {
+        const matches = ['m1', 'm2', 'm3', 'm4', 'm5', 'm6'];
+        matches.forEach(m => {
+            dBracket[m].winner = null;
+            dBracket[m].loser = null;
+        });
+        updateDoubleElimination();
+    }
+
+    function exportToCSV() {
+        if (!dBracket.m6.winner) {
+            alert("Atenção: Você precisa terminar o campeonato definindo o Vencedor da Grande Final antes de exportar a planilha de resultados!");
+            return;
+        }
+
+        const standings = [
+            { pos: "1º Lugar", team: dBracket.m6.winner },
+            { pos: "2º Lugar", team: dBracket.m6.loser },
+            { pos: "3º Lugar", team: dBracket.m5.loser },
+            { pos: "4º Lugar", team: dBracket.m4.loser }
+        ];
+
+        let csvContent = "data:text/csv;charset=utf-8,\uFEFF";
+        csvContent += "Colocacao,Nome do Time,TOP,JG,MID,ADC,SUP\n";
+
+        standings.forEach(s => {
+            if (s.team) {
+                const teamPlayers = teams[s.team.id];
+                
+                const getPlayerName = (lane) => {
+                    const p = teamPlayers.find(pl => pl.lane === lane);
+                    return p ? p.name : "Vago";
+                };
+
+                const row = [
+                    s.pos,
+                    s.team.name,
+                    getPlayerName('TOP'),
+                    getPlayerName('JG'),
+                    getPlayerName('MID'),
+                    getPlayerName('ADC'),
+                    getPlayerName('SUP')
+                ].join(",");
+                
+                csvContent += row + "\n";
+            }
+        });
+
+        const encodedUri = encodeURI(csvContent);
+        const link = document.createElement("a");
+        link.setAttribute("href", encodedUri);
+        link.setAttribute("download", "Resultados_RK_Draft_List.csv");
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    }
+    </script>
+</body>
+</html>
