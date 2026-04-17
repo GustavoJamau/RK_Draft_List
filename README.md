@@ -14,7 +14,7 @@ Não é necessário instalar nada ou configurar servidores.
 * Dê um duplo clique para abri-lo em qualquer navegador moderno (Chrome, Edge, Opera, Firefox).
 
 ### 2. Formatação da Lista de Jogadores
-Na tela inicial, deve colar **exatamente 20 jogadores** (sendo rigorosamente 4 de cada rota). O formato exigido por linha é:
+Na tela inicial, cole **exatamente 20 jogadores** (sendo rigorosamente 4 de cada rota). O formato exigido por linha é:
 
     ROTA - Nome do Jogador ELO
 
@@ -25,24 +25,24 @@ Na tela inicial, deve colar **exatamente 20 jogadores** (sendo rigorosamente 4 d
     ADC - Vash the Stampede MESTRE
     SUP - Orihime Inoue DIMA
 
-*(Dica: Deve inserir 4 jogadores para cada uma das 5 rotas. Linhas em branco são ignoradas automaticamente).*
+*(Dica: Adicione 4 jogadores para cada uma das 5 rotas. Linhas em branco são ignoradas automaticamente).*
 
 ---
 
 ## ⚙️ Funcionamento do Torneio
 
 ### 🛡️ Seleção de Capitães
-O sistema avalia automaticamente a força de todas as rotas (somando o peso dos elos). Os 4 jogadores da rota mais forte/parelha do lobby são definidos como os capitães das equipas.
+O sistema avalia automaticamente a variação de elo de todas as rotas. Os 4 jogadores da rota **mais parelha e equilibrada** (com a menor diferença de nível entre si) são definidos como os capitães das equipes. Em caso de empate no equilíbrio, a rota com a maior soma de elos tem a preferência. Além disso, a ordem de quem começa escolhendo no Draft é **totalmente aleatória (sorteada)** pelo sistema para garantir justiça entre os times.
 
 ### 🐍 O Draft (Snake Draft)
 Após o processamento, o Draft é iniciado:
-- Os capitães revezam-se na escolha dos jogadores disponíveis.
-- Existe um cronómetro de **30 segundos** por escolha (com seleção automática caso o tempo acabe).
-- **Regra de bloqueio:** Uma equipa não pode escolher dois jogadores da mesma rota.
+- Os capitães se revezam na escolha dos jogadores disponíveis.
+- Existe um cronômetro de **30 segundos** por escolha (com seleção automática caso o tempo acabe).
+- **Regra de bloqueio:** Uma equipe não pode escolher dois jogadores da mesma rota.
 
 ### ⚔️ O Chaveamento
-Com as equipas formadas, clique em "Gerar Chaveamento" para criar a tabela *Double Elimination*.
-- **Avançar de fase:** Para definir o vencedor de uma partida, basta clicar no nome da equipa dentro do bloco do confronto.
+Com as equipes formadas, clique em "Gerar Chaveamento" para criar a tabela *Double Elimination*.
+- **Avançar de fase:** Para definir o vencedor de uma partida, basta clicar no nome da equipe dentro do bloco do confronto.
 - **Formato:** Todas as partidas da chave (Superior e Inferior) são **MD1**, enquanto a Grande Final é **MD3**.
 
 ---
@@ -52,7 +52,7 @@ Com as equipas formadas, clique em "Gerar Chaveamento" para criar a tabela *Doub
 Ao finalizar o campeonato e definir o grande Campeão, o sistema libera o botão:
 `📥 Exportar Planilha de Resultados`
 
-Isto irá gerar e descarregar um arquivo `.csv` automaticamente, contendo a classificação final (1º ao 4º lugar), o nome das equipas e a escalação exata de cada membro na sua respetiva rota, pronto para ser aberto no Excel ou Google Sheets.
+Isso irá gerar e baixar um arquivo `.csv` automaticamente, contendo a classificação final (1º ao 4º lugar), o nome das equipes e a escalação exata de cada membro na sua respectiva rota, pronto para ser aberto no Excel ou Google Sheets.
 
 ---
 
