@@ -37,7 +37,7 @@
             <div>
                 <h3 class="text-green-500 font-bold mb-1 text-sm uppercase tracking-wide">Regras do Torneio</h3>
                 <p class="text-zinc-300 text-sm leading-relaxed">
-                    <strong class="text-white">Capitães:</strong> Os capitães serão <strong>sempre os jogadores da rota da Selva (JG)</strong>. A ordem de quem começa escolhendo é sorteada aleatoriamente para ser justa.<br>
+                    <strong class="text-white">Capitães:</strong> A rota com os elos mais equilibrados (menor variação de nível) será definida como a rota dos capitães. A ordem de quem começa escolhendo é sorteada aleatoriamente.<br>
                     <strong class="text-white">Formação:</strong> Modo Draft (Escolha), onde os capitães escolhem seus membros em turnos.
                 </p>
             </div>
@@ -192,12 +192,37 @@ SUP - JogadorY GM
             return;
         }
 
-        // CAPITÃES: Fixado para ser SEMPRE a JUNGLE (JG)
-        let bestLane = 'JG';
+        // Seleção de Capitães: Rota Mais Parelha / Equilibrada
+        let bestLane = 'TOP';
+        let minVariance = Infinity;
+        let bestLaneScore = 0; 
+        
+        Object.keys(laneGroups).forEach(lane => {
+            let players = laneGroups[lane];
+            let sum = players.reduce((acc, p) => acc + p.weight, 0);
+            let mean = sum / players.length;
+            
+            // Calcula a variância (quão distantes os elos estão da média)
+            let variance = players.reduce((acc, p) => acc + Math.pow(p.weight - mean, 2), 0) / players.length;
+
+            // Busca a menor variância (a rota mais parelha)
+            if (variance < minVariance) {
+                minVariance = variance;
+                bestLane = lane;
+                bestLaneScore = sum; 
+            } 
+            // Critério de desempate: se duas rotas forem perfeitamente parelhas, escolhe a de elo mais alto
+            else if (variance === minVariance) {
+                if (sum > bestLaneScore) {
+                    bestLane = lane;
+                    bestLaneScore = sum;
+                }
+            }
+        });
 
         // Os capitães são sorteados aleatoriamente para definir a ordem de quem começa o pick
         captains = shuffle([...laneGroups[bestLane]]);
-        let extraDisplayInfo = ` &mdash; <span class="text-green-400 font-black">Capitães: JUNGLE</span>`;
+        let extraDisplayInfo = ` &mdash; <span class="text-green-400 font-black">Rota Chefe: ${bestLane} (Mais Equilibrada)</span>`;
 
         document.getElementById('team-count-display').innerHTML = `4 Times${extraDisplayInfo}`;
         
@@ -322,7 +347,7 @@ SUP - JogadorY GM
                 }).join('')}
             </div>`).join('');
 
-        // ATUALIZADO: Elo visível e estilizado nos cartões de jogadores disponíveis
+        // Elo visível e estilizado nos cartões de jogadores disponíveis
         document.getElementById('available-players').innerHTML = playersPool.map(p => {
             const block = teams[curIdx].some(tp => tp.lane === p.lane);
             return `<button onclick="${block ? '' : `pickPlayer(${p.id})`}" class="p-3 rounded-lg text-left border flex flex-col gap-1 ${block ? 'bg-black/60 border-red-900/30 opacity-40 cursor-not-allowed' : 'bg-zinc-900/80 border-zinc-800 hover:border-green-500'}">
