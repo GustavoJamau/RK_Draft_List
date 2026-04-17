@@ -37,7 +37,7 @@
             <div>
                 <h3 class="text-green-500 font-bold mb-1 text-sm uppercase tracking-wide">Regras do Torneio</h3>
                 <p class="text-zinc-300 text-sm leading-relaxed">
-                    <strong class="text-white">Capitães:</strong> A rota com os elos mais equilibrados (menor variação de nível entre os jogadores) será definida como a rota dos capitães.<br>
+                    <strong class="text-white">Capitães:</strong> Os capitães serão <strong>sempre os jogadores da rota da Selva (JG)</strong>. A ordem de quem começa escolhendo é sorteada aleatoriamente para ser justa.<br>
                     <strong class="text-white">Formação:</strong> Modo Draft (Escolha), onde os capitães escolhem seus membros em turnos.
                 </p>
             </div>
@@ -126,7 +126,6 @@ SUP - JogadorY GM
     let timer;
     let timeLeft = 30;
 
-    // Dicionário atualizado para suportar variações e abreviações
     const tierWeights = { 
         'CHALL': 10, 'CHALLENGER': 10, 'DESAFIANTE': 10,
         'GM': 9, 'GRAO MESTRE': 9, 'GRÃO MESTRE': 9, 'GRAO-MESTRE': 9, 'GRANDMASTER': 9,
@@ -164,7 +163,6 @@ SUP - JogadorY GM
         const laneGroups = { TOP: [], JG: [], MID: [], ADC: [], SUP: [] };
         allPlayers = [];
 
-        // Regex atualizado para capturar as variações adicionadas
         const regex = /^(TOP|JG|MID|ADC|SUP)\s*[-–—]\s*(.+?)\s+(CHALL|CHALLENGER|DESAFIANTE|GM|GRÃO MESTRE|GRAO MESTRE|GRAO-MESTRE|GRANDMASTER|MESTRE|MASTER|DIMA|DIAMANTE|DIAMOND|ESMERALDA|EMERALD|PLATINA|PLATINUM|PLAT|OURO|GOLD|PRATA|SILVER|BRONZE|FERRO|IRON)$/i;
 
         lines.forEach((line, index) => {
@@ -194,41 +192,15 @@ SUP - JogadorY GM
             return;
         }
 
-        // Seleção de Capitães (Atualizado: Rota Mais Parelha / Equilibrada)
-        let bestLane = 'TOP';
-        let minVariance = Infinity;
-        let bestLaneScore = 0; 
-        
-        Object.keys(laneGroups).forEach(lane => {
-            let players = laneGroups[lane];
-            let sum = players.reduce((acc, p) => acc + p.weight, 0);
-            let mean = sum / players.length;
-            
-            // Calcula a variância (quão distantes os elos estão da média)
-            let variance = players.reduce((acc, p) => acc + Math.pow(p.weight - mean, 2), 0) / players.length;
+        // CAPITÃES: Fixado para ser SEMPRE a JUNGLE (JG)
+        let bestLane = 'JG';
 
-            // Busca a menor variância (a rota mais parelha)
-            if (variance < minVariance) {
-                minVariance = variance;
-                bestLane = lane;
-                bestLaneScore = sum; 
-            } 
-            // Critério de desempate: se duas rotas forem perfeitamente parelhas, escolhe a de elo mais alto
-            else if (variance === minVariance) {
-                if (sum > bestLaneScore) {
-                    bestLane = lane;
-                    bestLaneScore = sum;
-                }
-            }
-        });
-
-        // Capitães agora são sorteados (randomizados) em vez de ordenados pelo peso
+        // Os capitães são sorteados aleatoriamente para definir a ordem de quem começa o pick
         captains = shuffle([...laneGroups[bestLane]]);
-        let extraDisplayInfo = ` &mdash; <span class="text-green-400 font-black">Rota Chefe: ${bestLane} (Mais Equilibrada)</span>`;
+        let extraDisplayInfo = ` &mdash; <span class="text-green-400 font-black">Capitães: JUNGLE</span>`;
 
         document.getElementById('team-count-display').innerHTML = `4 Times${extraDisplayInfo}`;
         
-        // Exibição mais destacada na segunda página (Aumento do elo e dos nicks)
         document.getElementById('captain-preview').innerHTML = captains.map((c, idx) => `
             <div class="bg-black/60 p-4 rounded-lg border border-green-900 text-left flex flex-col justify-between h-full">
                 <div class="text-xs text-green-500 font-bold uppercase tracking-widest">Time ${idx + 1}</div>
@@ -350,11 +322,15 @@ SUP - JogadorY GM
                 }).join('')}
             </div>`).join('');
 
+        // ATUALIZADO: Elo visível e estilizado nos cartões de jogadores disponíveis
         document.getElementById('available-players').innerHTML = playersPool.map(p => {
             const block = teams[curIdx].some(tp => tp.lane === p.lane);
-            return `<button onclick="${block ? '' : `pickPlayer(${p.id})`}" class="p-3 rounded-lg text-left border ${block ? 'bg-black/60 border-red-900/30 opacity-40 cursor-not-allowed' : 'bg-zinc-900/80 border-zinc-800 hover:border-green-500'}">
-                <span class="block text-[10px] font-bold ${block ? 'text-red-500' : 'text-green-500'} uppercase">${p.lane}</span>
-                <div class="text-base font-bold truncate ${block ? 'text-zinc-500' : 'text-white'}">${p.name}</div>
+            return `<button onclick="${block ? '' : `pickPlayer(${p.id})`}" class="p-3 rounded-lg text-left border flex flex-col gap-1 ${block ? 'bg-black/60 border-red-900/30 opacity-40 cursor-not-allowed' : 'bg-zinc-900/80 border-zinc-800 hover:border-green-500'}">
+                <div class="flex justify-between items-center w-full">
+                    <span class="block text-[10px] font-bold ${block ? 'text-red-500' : 'text-green-500'} uppercase">${p.lane}</span>
+                    <span class="text-[10px] font-bold ${block ? 'text-zinc-600' : 'text-zinc-400'} uppercase">${p.tier}</span>
+                </div>
+                <div class="text-base font-bold truncate w-full mt-1 ${block ? 'text-zinc-500' : 'text-white'}">${p.name}</div>
             </button>`;
         }).join('');
     }
@@ -393,7 +369,6 @@ SUP - JogadorY GM
         let m = dBracket[mId];
         if (!m.t1 || !m.t2) return; 
         
-        // Impede a alteração se a partida já tem um vencedor
         if (m.winner) return;
 
         m.winner = teamNum === 1 ? m.t1 : m.t2;
@@ -404,7 +379,6 @@ SUP - JogadorY GM
     function updateDoubleElimination() {
         let b = dBracket;
 
-        // 1. Resolvemos m3 e m4 limpando e puxando ESTRITAMENTE de m1 e m2
         b.m3.t1 = b.m1.winner || null;
         b.m4.t1 = b.m1.loser || null;
         b.m3.t2 = b.m2.winner || null;
@@ -413,13 +387,11 @@ SUP - JogadorY GM
         if (b.m3.winner && (b.m3.winner.id !== b.m3.t1?.id && b.m3.winner.id !== b.m3.t2?.id)) { b.m3.winner = null; b.m3.loser = null; }
         if (b.m4.winner && (b.m4.winner.id !== b.m4.t1?.id && b.m4.winner.id !== b.m4.t2?.id)) { b.m4.winner = null; b.m4.loser = null; }
 
-        // 2. Resolvemos m5 limpando e puxando ESTRITAMENTE de m4 (winner) e m3 (loser)
         b.m5.t1 = b.m4.winner || null;
         b.m5.t2 = b.m3.loser || null;
 
         if (b.m5.winner && (b.m5.winner.id !== b.m5.t1?.id && b.m5.winner.id !== b.m5.t2?.id)) { b.m5.winner = null; b.m5.loser = null; }
 
-        // 3. Resolvemos m6 limpando e puxando ESTRITAMENTE de m3 (winner) e m5 (winner)
         b.m6.t1 = b.m3.winner || null;
         b.m6.t2 = b.m5.winner || null;
 
