@@ -37,7 +37,7 @@
             <div>
                 <h3 class="text-green-500 font-bold mb-1 text-sm uppercase tracking-wide">Regras do Torneio</h3>
                 <p class="text-zinc-300 text-sm leading-relaxed">
-                    <strong class="text-white">Capitães:</strong> A rota com os elos mais altos somados será definida como a rota dos capitães (Rota Mais Parelha).<br>
+                    <strong class="text-white">Capitães:</strong> A rota com os elos mais equilibrados (menor variação de nível entre os jogadores) será definida como a rota dos capitães.<br>
                     <strong class="text-white">Formação:</strong> Modo Draft (Escolha), onde os capitães escolhem seus membros em turnos.
                 </p>
             </div>
@@ -194,20 +194,36 @@ SUP - JogadorY GM
             return;
         }
 
-        // Seleção de Capitães (Fixo: Rota Mais Parelha)
+        // Seleção de Capitães (Atualizado: Rota Mais Parelha / Equilibrada)
         let bestLane = 'TOP';
-        let maxScore = -1;
+        let minVariance = Infinity;
+        let bestLaneScore = 0; 
         
         Object.keys(laneGroups).forEach(lane => {
-            let laneScore = laneGroups[lane].reduce((sum, p) => sum + p.weight, 0);
-            if (laneScore > maxScore) {
-                maxScore = laneScore;
+            let players = laneGroups[lane];
+            let sum = players.reduce((acc, p) => acc + p.weight, 0);
+            let mean = sum / players.length;
+            
+            // Calcula a variância (quão distantes os elos estão da média)
+            let variance = players.reduce((acc, p) => acc + Math.pow(p.weight - mean, 2), 0) / players.length;
+
+            // Busca a menor variância (a rota mais parelha)
+            if (variance < minVariance) {
+                minVariance = variance;
                 bestLane = lane;
+                bestLaneScore = sum; 
+            } 
+            // Critério de desempate: se duas rotas forem perfeitamente parelhas, escolhe a de elo mais alto
+            else if (variance === minVariance) {
+                if (sum > bestLaneScore) {
+                    bestLane = lane;
+                    bestLaneScore = sum;
+                }
             }
         });
 
         captains = [...laneGroups[bestLane]].sort((a, b) => b.weight - a.weight);
-        let extraDisplayInfo = ` &mdash; <span class="text-green-400 font-black">Rota Chefe: ${bestLane} (${maxScore} Pts)</span>`;
+        let extraDisplayInfo = ` &mdash; <span class="text-green-400 font-black">Rota Chefe: ${bestLane} (Mais Equilibrada)</span>`;
 
         document.getElementById('team-count-display').innerHTML = `4 Times${extraDisplayInfo}`;
         
