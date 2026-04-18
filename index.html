@@ -24,26 +24,26 @@
 </head>
 <body class="text-white min-h-screen p-4 font-sans">
 
-    <div id="setup-screen" class="max-w-3xl mx-auto bg-zinc-900/90 backdrop-blur-sm p-8 rounded-xl shadow-2xl mt-10 border border-green-900/50">
-        <h1 class="text-3xl font-bold mb-2 text-green-500">RK Draft List</h1>
-        <p class="mb-6 text-zinc-400 text-sm">Cole a lista com exatamente 20 jogadores (4 de cada lane) para formar 4 times.</p>
+    <div id="setup-screen" class="max-w-4xl mx-auto bg-zinc-900/90 backdrop-blur-sm p-8 md:p-10 rounded-xl shadow-2xl mt-10 border border-green-900/50">
+        <h1 class="text-4xl md:text-5xl font-black mb-3 text-green-500 tracking-tight">RK Draft List</h1>
+        <p class="mb-8 text-zinc-300 text-base md:text-lg">Cole a lista com exatamente 20 jogadores (4 de cada lane) para formar 4 times.</p>
         
-        <div class="bg-black/50 p-5 rounded-lg border border-green-900/30 mb-6 flex items-start gap-4">
+        <div class="bg-black/50 p-6 rounded-lg border border-green-900/30 mb-8 flex items-start gap-4">
             <div class="text-green-500 mt-1">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-6 h-6">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-8 h-8">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M11.25 11.25l.041-.02a.75.75 0 011.063.852l-.708 2.836a.75.75 0 001.063.853l.041-.021M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9-3.75h.008v.008H12V8.25z" />
                 </svg>
             </div>
             <div>
-                <h3 class="text-green-500 font-bold mb-1 text-sm uppercase tracking-wide">Regras do Torneio</h3>
-                <p class="text-zinc-300 text-sm leading-relaxed">
+                <h3 class="text-green-500 font-bold mb-2 text-base md:text-lg uppercase tracking-wide">Regras do Torneio</h3>
+                <p class="text-zinc-300 text-base md:text-lg leading-relaxed">
                     <strong class="text-white">Capitães:</strong> A rota com os elos mais equilibrados (menor variação de nível) será definida como a rota dos capitães. A ordem de quem começa escolhendo é sorteada aleatoriamente.<br>
-                    <strong class="text-white">Formação:</strong> Modo Draft (Escolha), onde os capitães escolhem seus membros em turnos.
+                    <strong class="text-white mt-2 block">Formação:</strong> Modo Draft (Escolha), onde os capitães escolhem seus membros em turnos.
                 </p>
             </div>
         </div>
 
-        <textarea id="player-list" class="w-full h-64 p-4 bg-black/80 border border-green-900/30 rounded-lg mb-6 font-mono text-sm focus:border-green-500 outline-none transition text-green-100 whitespace-pre" placeholder="Exemplo:
+        <textarea id="player-list" class="w-full h-72 p-5 bg-black/80 border border-green-900/30 rounded-lg mb-8 font-mono text-base focus:border-green-500 outline-none transition text-green-100 whitespace-pre" placeholder="Exemplo:
 TOP - Fulano CHALLENGER
 JG - Ciclano DIAMANTE
 MID - Beltrano GOLD
@@ -51,32 +51,34 @@ ADC - JogadorX PLATINA
 SUP - JogadorY GM
 
 (Adicione todos os 20 jogadores, 4 de cada rota)"></textarea>
-        <button onclick="analyzeList()" class="w-full bg-green-600 hover:bg-green-500 py-4 rounded-lg font-bold text-lg transition shadow-lg text-black">Processar Jogadores</button>
+        <button onclick="analyzeList()" class="w-full bg-green-600 hover:bg-green-500 py-5 rounded-lg font-bold text-xl transition shadow-lg text-black">Processar Jogadores</button>
     </div>
 
-    <div id="confirm-screen" class="hidden max-w-4xl mx-auto bg-zinc-900/90 backdrop-blur-sm p-8 rounded-xl shadow-2xl mt-10 text-center border border-green-800">
-        <h2 class="text-2xl font-bold mb-2 text-green-500">Capitães Definidos</h2>
-        <p class="text-zinc-400 mb-6 italic">Total de Times: <span id="team-count-display" class="font-bold text-white">4 Times</span></p>
-        <div id="captain-preview" class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8"></div>
+    <div id="confirm-screen" class="hidden max-w-5xl mx-auto bg-zinc-900/90 backdrop-blur-sm p-8 md:p-12 rounded-xl shadow-2xl mt-10 text-center border border-green-800">
+        <h2 class="text-3xl md:text-4xl font-black mb-4 text-green-500">Capitães Definidos</h2>
+        <p class="text-zinc-300 mb-10 text-lg md:text-xl italic">Total de Times: <span id="team-count-display" class="font-bold text-white">4 Times</span></p>
+        <div id="captain-preview" class="grid grid-cols-2 md:grid-cols-4 gap-6 mb-10"></div>
         <div class="flex gap-4">
-            <button onclick="backToSetup()" class="flex-1 bg-zinc-800/90 hover:bg-zinc-700 py-3 rounded-lg font-bold border border-zinc-700">Voltar</button>
-            <button onclick="startProcess()" class="flex-1 bg-green-600 hover:bg-green-500 py-3 rounded-lg font-bold shadow-lg text-black" id="btn-start-process">Iniciar Draft</button>
+            <button onclick="backToSetup()" class="flex-1 bg-zinc-800/90 hover:bg-zinc-700 py-4 rounded-lg font-bold text-lg border border-zinc-700">Voltar</button>
+            <button onclick="startProcess()" class="flex-1 bg-green-600 hover:bg-green-500 py-4 rounded-lg font-bold text-lg shadow-lg text-black" id="btn-start-process">Iniciar Draft</button>
         </div>
     </div>
 
     <div id="draft-screen" class="hidden max-w-7xl mx-auto py-6">
-        <div class="flex flex-col md:flex-row justify-between items-center mb-6 gap-4">
-            <div>
-                <h2 class="text-2xl font-bold">
-                    Draft
-                </h2>
-                <p id="remaining-count" class="text-zinc-400 text-sm italic"></p>
+        <div id="turn-indicator" class="relative text-center mb-10 p-8 bg-green-900/20 backdrop-blur-sm border border-green-500/30 rounded-2xl flex flex-col items-center justify-center">
+            
+            <div class="absolute top-5 left-6 text-left hidden md:block">
+                <h2 class="text-3xl font-black text-white leading-none">Draft</h2>
+                <p id="remaining-count" class="text-zinc-400 text-base italic mt-1"></p>
             </div>
-        </div>
 
-        <div id="turn-indicator" class="text-center mb-10 p-6 bg-green-900/20 backdrop-blur-sm border border-green-500/30 rounded-2xl flex flex-col items-center justify-center">
-            <p class="text-green-500 uppercase tracking-widest text-xs font-bold mb-3">Agora é a vez de:</p>
-            <div class="flex items-center justify-center gap-6">
+            <div class="md:hidden text-center mb-4">
+                <h2 class="text-2xl font-black text-white leading-none">Draft</h2>
+                <p id="remaining-count-mobile" class="text-zinc-400 text-sm italic mt-1"></p>
+            </div>
+
+            <p class="text-green-500 uppercase tracking-widest text-sm font-bold mb-3 mt-2 md:mt-0">Agora é a vez de:</p>
+            <div class="flex flex-wrap items-center justify-center gap-6">
                 <span class="text-4xl md:text-5xl font-black text-white" id="current-captain-name">---</span>
                 <div id="timer-display" class="text-4xl md:text-5xl font-mono font-bold bg-black/80 backdrop-blur-sm px-6 py-2 rounded-xl border-2 border-green-600 shadow-[0_0_15px_rgba(34,197,94,0.2)] text-green-500">30s</div>
             </div>
@@ -230,10 +232,10 @@ SUP - JogadorY GM
         document.getElementById('team-count-display').innerHTML = `4 Times${extraDisplayInfo}`;
         
         document.getElementById('captain-preview').innerHTML = captains.map((c, idx) => `
-            <div class="bg-black/60 p-4 rounded-lg border border-green-900 text-left flex flex-col justify-between h-full">
-                <div class="text-xs text-green-500 font-bold uppercase tracking-widest">Time ${idx + 1}</div>
-                <div class="font-black text-xl text-white truncate my-1">${c.name}</div>
-                <div class="text-xs text-zinc-300 font-semibold uppercase mt-auto pt-2 border-t border-green-900/50">${c.lane} - ${c.tier}</div>
+            <div class="bg-black/60 p-5 rounded-lg border border-green-900 text-left flex flex-col justify-between h-full">
+                <div class="text-sm text-green-500 font-bold uppercase tracking-widest">Time ${idx + 1}</div>
+                <div class="font-black text-2xl text-white truncate my-2">${c.name}</div>
+                <div class="text-sm text-zinc-300 font-semibold uppercase mt-auto pt-3 border-t border-green-900/50">${c.lane} - ${c.tier}</div>
             </div>
         `).join('');
 
@@ -336,7 +338,11 @@ SUP - JogadorY GM
     function renderDraft() {
         const curIdx = snakeCycle[turnIndex % snakeCycle.length];
         document.getElementById('current-captain-name').innerHTML = `${captains[curIdx].name}`;
-        document.getElementById('remaining-count').innerHTML = `<span class="font-bold text-green-500">${playersPool.length}</span> restantes`;
+        
+        // Atualiza o contador nos dois lugares (Desktop e Mobile)
+        const remainingHtml = `<span class="font-bold text-green-500">${playersPool.length}</span> restantes`;
+        document.getElementById('remaining-count').innerHTML = remainingHtml;
+        document.getElementById('remaining-count-mobile').innerHTML = remainingHtml;
 
         document.getElementById('teams-container').innerHTML = teams.map((t, i) => `
             <div class="bg-zinc-900/90 p-5 rounded-xl border-2 ${i === curIdx ? 'border-green-500 scale-105 shadow-[0_0_15px_rgba(34,197,94,0.3)]' : 'border-zinc-800 opacity-80'}">
