@@ -65,19 +65,21 @@ SUP - JogadorY GM
     </div>
 
     <div id="draft-screen" class="hidden max-w-7xl mx-auto py-6">
-        <div class="flex flex-col md:flex-row justify-between items-center mb-8 gap-4">
+        <div class="flex flex-col md:flex-row justify-between items-center mb-6 gap-4">
             <div>
                 <h2 class="text-2xl font-bold">
                     Draft
                 </h2>
                 <p id="remaining-count" class="text-zinc-400 text-sm italic"></p>
             </div>
-            <div id="timer-display" class="text-5xl font-mono font-bold bg-black/80 backdrop-blur-sm px-8 py-3 rounded-xl border-2 border-green-600 shadow-[0_0_15px_rgba(34,197,94,0.2)] text-green-500">30s</div>
         </div>
 
-        <div id="turn-indicator" class="text-center mb-8 p-6 bg-green-900/20 backdrop-blur-sm border border-green-500/30 rounded-2xl">
-            <p class="text-green-500 uppercase tracking-widest text-xs font-bold mb-1">Agora é a vez de:</p>
-            <span class="text-4xl font-black text-white" id="current-captain-name">---</span>
+        <div id="turn-indicator" class="text-center mb-10 p-6 bg-green-900/20 backdrop-blur-sm border border-green-500/30 rounded-2xl flex flex-col items-center justify-center">
+            <p class="text-green-500 uppercase tracking-widest text-xs font-bold mb-3">Agora é a vez de:</p>
+            <div class="flex items-center justify-center gap-6">
+                <span class="text-4xl md:text-5xl font-black text-white" id="current-captain-name">---</span>
+                <div id="timer-display" class="text-4xl md:text-5xl font-mono font-bold bg-black/80 backdrop-blur-sm px-6 py-2 rounded-xl border-2 border-green-600 shadow-[0_0_15px_rgba(34,197,94,0.2)] text-green-500">30s</div>
+            </div>
         </div>
 
         <div class="grid gap-4 mb-10" id="teams-container" style="grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));"></div>
@@ -90,11 +92,11 @@ SUP - JogadorY GM
         </div>
     </div>
 
-    <div id="result-screen" class="hidden max-w-7xl mx-auto text-center py-10">
-        <h1 class="text-5xl font-black mb-4 text-white tracking-tighter italic">TIMES <span class="text-green-500">FORMADOS</span></h1>
-        <div id="final-teams" class="grid gap-6 text-left" style="grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));"></div>
+    <div id="result-screen" class="hidden max-w-7xl mx-auto text-center py-16">
+        <h1 class="text-5xl md:text-6xl font-black mb-12 text-white tracking-tighter italic">TIMES <span class="text-green-500">FORMADOS</span></h1>
+        <div id="final-teams" class="grid gap-8 text-left" style="grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));"></div>
         
-        <div class="mt-12 flex justify-center gap-6">
+        <div class="mt-20 flex justify-center gap-6">
             <button onclick="location.reload()" class="bg-zinc-800 hover:bg-zinc-700 px-8 py-4 rounded-full font-bold transition-all border border-zinc-700 text-white">Resetar Tudo</button>
             <button onclick="startTournament()" class="bg-green-600 hover:bg-green-500 px-10 py-4 rounded-full font-bold transition-all transform hover:scale-105 shadow-xl text-black">Gerar Chaveamento Double Elim.</button>
         </div>
@@ -168,8 +170,12 @@ SUP - JogadorY GM
         lines.forEach((line, index) => {
             const match = line.trim().match(regex);
             if (match) {
+                // Filtro para remover traços ou hifens no final do nome capturado
+                let rawName = match[2].trim();
+                let cleanName = rawName.replace(/\s*[-–—]\s*$/, '');
+
                 const p = { 
-                    id: index, name: match[2].trim(), tier: match[3].toUpperCase(), 
+                    id: index, name: cleanName, tier: match[3].toUpperCase(), 
                     lane: match[1].toUpperCase(), weight: tierWeights[match[3].toUpperCase()] || 0 
                 };
                 laneGroups[p.lane].push(p);
@@ -205,14 +211,11 @@ SUP - JogadorY GM
             // Calcula a variância (quão distantes os elos estão da média)
             let variance = players.reduce((acc, p) => acc + Math.pow(p.weight - mean, 2), 0) / players.length;
 
-            // Busca a menor variância (a rota mais parelha)
             if (variance < minVariance) {
                 minVariance = variance;
                 bestLane = lane;
                 bestLaneScore = sum; 
-            } 
-            // Critério de desempate: se duas rotas forem perfeitamente parelhas, escolhe a de elo mais alto
-            else if (variance === minVariance) {
+            } else if (variance === minVariance) {
                 if (sum > bestLaneScore) {
                     bestLane = lane;
                     bestLaneScore = sum;
@@ -220,7 +223,7 @@ SUP - JogadorY GM
             }
         });
 
-        // Os capitães são sorteados aleatoriamente para definir a ordem de quem começa o pick
+        // Os capitães são sorteados aleatoriamente para definir a ordem
         captains = shuffle([...laneGroups[bestLane]]);
         let extraDisplayInfo = ` &mdash; <span class="text-green-400 font-black">Rota Chefe: ${bestLane} (Mais Equilibrada)</span>`;
 
