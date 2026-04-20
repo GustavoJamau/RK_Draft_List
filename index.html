@@ -7,43 +7,42 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         body { 
-            background-color: #000000; 
-            background-image: linear-gradient(rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.8)), url('Wallpaper_01.png');
+            background-color: #050505; 
+            background-image: linear-gradient(rgba(0, 0, 0, 0.85), rgba(0, 0, 0, 0.85)), url('Wallpaper_01.png');
             background-size: cover;
             background-position: center;
             background-attachment: fixed;
             background-repeat: no-repeat;
         }
-        .timer-low { color: #ff4b4b; animation: pulse 1s infinite; }
+        .timer-low { color: #ef4444; animation: pulse 1s infinite; }
         @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
-        .selected-glow { box-shadow: 0 0 20px rgba(34, 197, 94, 0.3); border-color: #22c55e !important; }
         ::-webkit-scrollbar { width: 8px; height: 8px; }
         ::-webkit-scrollbar-track { background: rgba(0,0,0,0.5); }
         ::-webkit-scrollbar-thumb { background: #166534; border-radius: 4px; }
     </style>
 </head>
-<body class="text-white min-h-screen p-4 font-sans">
+<body class="text-white min-h-screen p-4 font-sans selection:bg-green-500 selection:text-black">
 
-    <div id="setup-screen" class="max-w-4xl mx-auto bg-zinc-900/90 backdrop-blur-sm p-8 md:p-10 rounded-xl shadow-2xl mt-10 border border-green-900/50">
+    <div id="setup-screen" class="max-w-4xl mx-auto bg-zinc-950/90 backdrop-blur-md p-8 md:p-10 rounded-2xl shadow-2xl mt-10 border border-green-900/50">
         <h1 class="text-4xl md:text-5xl font-black mb-3 text-green-500 tracking-tight">RK Draft List</h1>
-        <p class="mb-8 text-zinc-300 text-base md:text-lg">Cole a lista com exatamente 20 jogadores (4 de cada lane) para formar 4 times.</p>
+        <p class="mb-8 text-zinc-400 text-base md:text-lg">Cole a lista com exatamente 20 jogadores (4 de cada lane) para formar 4 times.</p>
         
-        <div class="bg-black/50 p-6 rounded-lg border border-green-900/30 mb-8 flex items-start gap-4">
+        <div class="bg-black/60 p-6 rounded-xl border border-green-900/40 mb-8 flex items-start gap-4 shadow-inner">
             <div class="text-green-500 mt-1">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-8 h-8">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M11.25 11.25l.041-.02a.75.75 0 011.063.852l-.708 2.836a.75.75 0 001.063.853l.041-.021M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9-3.75h.008v.008H12V8.25z" />
                 </svg>
             </div>
             <div>
-                <h3 class="text-green-500 font-bold mb-2 text-base md:text-lg uppercase tracking-wide">Regras do Torneio</h3>
-                <p class="text-zinc-300 text-base md:text-lg leading-relaxed">
-                    <strong class="text-white">Capitães:</strong> A rota com os elos mais equilibrados (menor variação de nível) será definida como a rota dos capitães. A ordem de quem começa escolhendo é sorteada aleatoriamente.<br>
-                    <strong class="text-white mt-2 block">Formação:</strong> Modo Draft (Escolha), onde os capitães escolhem seus membros em turnos.
+                <h3 class="text-green-500 font-black mb-2 text-base md:text-lg uppercase tracking-widest">Regras do Torneio</h3>
+                <p class="text-zinc-300 text-sm md:text-base leading-relaxed">
+                    <strong class="text-white">Capitães:</strong> A rota com os elos mais equilibrados será definida como a rota dos capitães. A ordem de escolha é sorteada.<br>
+                    <strong class="text-white mt-2 block">Formação:</strong> Modo Draft (Escolha), onde os times escolhem seus membros em turnos estilo "Snake".
                 </p>
             </div>
         </div>
 
-        <textarea id="player-list" class="w-full h-72 p-5 bg-black/80 border border-green-900/30 rounded-lg mb-8 font-mono text-base focus:border-green-500 outline-none transition text-green-100 whitespace-pre" placeholder="Exemplo:
+        <textarea id="player-list" class="w-full h-72 p-5 bg-black/80 border border-green-900/50 rounded-xl mb-8 font-mono text-sm focus:border-green-500 outline-none transition text-green-100 whitespace-pre shadow-inner placeholder-zinc-700" placeholder="Exemplo:
 TOP - Fulano CHALLENGER
 JG - Ciclano DIAMANTE
 MID - Beltrano GOLD
@@ -51,43 +50,44 @@ ADC - JogadorX PLATINA
 SUP - JogadorY GM
 
 (Adicione todos os 20 jogadores, 4 de cada rota)"></textarea>
-        <button onclick="analyzeList()" class="w-full bg-green-600 hover:bg-green-500 py-5 rounded-lg font-bold text-xl transition shadow-lg text-black">Processar Jogadores</button>
+        <button onclick="analyzeList()" class="w-full bg-gradient-to-r from-green-700 to-green-500 hover:from-green-600 hover:to-green-400 py-5 rounded-xl font-black text-xl transition shadow-[0_0_20px_rgba(34,197,94,0.3)] text-black uppercase tracking-wider">Processar Jogadores</button>
     </div>
 
-    <div id="confirm-screen" class="hidden max-w-5xl mx-auto bg-zinc-900/90 backdrop-blur-sm p-8 md:p-12 rounded-xl shadow-2xl mt-10 text-center border border-green-800">
+    <div id="confirm-screen" class="hidden max-w-5xl mx-auto bg-zinc-950/90 backdrop-blur-md p-8 md:p-12 rounded-2xl shadow-2xl mt-10 text-center border border-green-900/50">
         <h2 class="text-3xl md:text-4xl font-black mb-4 text-green-500">Capitães Definidos</h2>
-        <p class="text-zinc-300 mb-10 text-lg md:text-xl italic">Total de Times: <span id="team-count-display" class="font-bold text-white">4 Times</span></p>
+        <p class="text-zinc-400 mb-10 text-lg md:text-xl italic">Total de Times: <span id="team-count-display" class="font-bold text-white">4 Times</span></p>
         <div id="captain-preview" class="grid grid-cols-2 md:grid-cols-4 gap-6 mb-10"></div>
         <div class="flex gap-4">
-            <button onclick="backToSetup()" class="flex-1 bg-zinc-800/90 hover:bg-zinc-700 py-4 rounded-lg font-bold text-lg border border-zinc-700">Voltar</button>
-            <button onclick="startProcess()" class="flex-1 bg-green-600 hover:bg-green-500 py-4 rounded-lg font-bold text-lg shadow-lg text-black" id="btn-start-process">Iniciar Draft</button>
+            <button onclick="backToSetup()" class="flex-1 bg-zinc-900 hover:bg-zinc-800 py-4 rounded-xl font-bold text-lg border border-zinc-700 transition">Voltar</button>
+            <button onclick="startProcess()" class="flex-1 bg-green-600 hover:bg-green-500 py-4 rounded-xl font-black text-lg shadow-[0_0_15px_rgba(34,197,94,0.3)] text-black transition uppercase tracking-wider" id="btn-start-process">Iniciar Draft</button>
         </div>
     </div>
 
     <div id="draft-screen" class="hidden max-w-7xl mx-auto py-6">
-        <div id="turn-indicator" class="relative text-center mb-10 p-8 bg-green-900/20 backdrop-blur-sm border border-green-500/30 rounded-2xl flex flex-col items-center justify-center">
+        <div id="turn-indicator" class="relative text-center mb-10 p-8 bg-black/60 backdrop-blur-md border border-green-500/30 rounded-2xl flex flex-col items-center justify-center shadow-[0_0_30px_rgba(0,0,0,0.5)]">
             
             <div class="absolute top-5 left-6 text-left hidden md:block">
-                <h2 class="text-3xl font-black text-white leading-none">Draft</h2>
-                <p id="remaining-count" class="text-zinc-400 text-base italic mt-1"></p>
+                <h2 class="text-3xl font-black text-white leading-none tracking-tight">DRAFT</h2>
+                <p id="remaining-count" class="text-zinc-500 text-sm font-bold uppercase tracking-widest mt-1"></p>
             </div>
 
             <div class="md:hidden text-center mb-4">
-                <h2 class="text-2xl font-black text-white leading-none">Draft</h2>
-                <p id="remaining-count-mobile" class="text-zinc-400 text-sm italic mt-1"></p>
+                <h2 class="text-2xl font-black text-white leading-none">DRAFT</h2>
+                <p id="remaining-count-mobile" class="text-zinc-500 text-xs font-bold uppercase tracking-widest mt-1"></p>
             </div>
 
-            <p class="text-green-500 uppercase tracking-widest text-sm font-bold mb-3 mt-2 md:mt-0">Agora é a vez de:</p>
+            <p class="text-green-600 uppercase tracking-widest text-sm font-bold mb-3 mt-2 md:mt-0">Agora é a vez do:</p>
             <div class="flex flex-wrap items-center justify-center gap-6">
-                <span class="text-4xl md:text-5xl font-black text-white" id="current-captain-name">---</span>
-                <div id="timer-display" class="text-4xl md:text-5xl font-mono font-bold bg-black/80 backdrop-blur-sm px-6 py-2 rounded-xl border-2 border-green-600 shadow-[0_0_15px_rgba(34,197,94,0.2)] text-green-500">30s</div>
+                <span class="text-4xl md:text-5xl font-black text-white drop-shadow-md" id="current-captain-name">---</span>
+                <div id="timer-display" class="text-4xl md:text-5xl font-mono font-black bg-black/80 px-6 py-2 rounded-xl border-2 border-green-600 shadow-[0_0_20px_rgba(34,197,94,0.3)] text-green-500">30s</div>
             </div>
         </div>
 
-        <div class="grid gap-4 mb-10" id="teams-container" style="grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));"></div>
+        <div class="grid gap-4 mb-10" id="teams-container" style="grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));"></div>
 
-        <div class="border-t border-green-900/50 pt-6">
-            <h3 class="text-xl font-bold mb-6 text-zinc-400 flex items-center gap-2 underline decoration-green-500 underline-offset-8">
+        <div class="border-t border-green-900/30 pt-8">
+            <h3 class="text-xl font-black mb-6 text-zinc-400 flex items-center gap-2 uppercase tracking-widest">
+                <span class="w-2 h-6 bg-green-500 rounded-full inline-block"></span>
                 Jogadores Disponíveis
             </h3>
             <div id="available-players" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3"></div>
@@ -95,26 +95,26 @@ SUP - JogadorY GM
     </div>
 
     <div id="result-screen" class="hidden max-w-7xl mx-auto text-center py-16">
-        <h1 class="text-5xl md:text-6xl font-black mb-12 text-white tracking-tighter italic">TIMES <span class="text-green-500">FORMADOS</span></h1>
+        <h1 class="text-5xl md:text-7xl font-black mb-16 text-white tracking-tighter italic drop-shadow-xl">TIMES <span class="text-transparent bg-clip-text bg-gradient-to-r from-green-400 to-green-600">FORMADOS</span></h1>
         <div id="final-teams" class="grid gap-8 text-left" style="grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));"></div>
         
-        <div class="mt-20 flex justify-center gap-6">
-            <button onclick="location.reload()" class="bg-zinc-800 hover:bg-zinc-700 px-8 py-4 rounded-full font-bold transition-all border border-zinc-700 text-white">Resetar Tudo</button>
-            <button onclick="startTournament()" class="bg-green-600 hover:bg-green-500 px-10 py-4 rounded-full font-bold transition-all transform hover:scale-105 shadow-xl text-black">Gerar Chaveamento Double Elim.</button>
+        <div class="mt-20 flex flex-col md:flex-row justify-center gap-6 max-w-2xl mx-auto">
+            <button onclick="location.reload()" class="bg-zinc-900 hover:bg-zinc-800 px-8 py-4 rounded-xl font-bold transition-all border border-zinc-700 text-zinc-300 w-full md:w-auto">Resetar Tudo</button>
+            <button onclick="startTournament()" class="bg-gradient-to-r from-green-600 to-green-500 hover:from-green-500 hover:to-green-400 px-10 py-4 rounded-xl font-black transition-all transform hover:scale-105 shadow-[0_0_20px_rgba(34,197,94,0.4)] text-black w-full md:w-auto uppercase tracking-wider">Gerar Chaveamento (Double Elim)</button>
         </div>
     </div>
 
     <div id="bracket-screen" class="hidden max-w-[95vw] mx-auto py-10">
-        <h1 class="text-4xl font-black mb-2 text-center text-green-500 tracking-tighter italic">DOUBLE ELIMINATION</h1>
-        <p class="text-zinc-400 text-center mb-10">Todos os jogos são MD1, exceto a Grande Final (MD3). Clique em um time para defini-lo como vencedor da partida.</p>
+        <h1 class="text-4xl md:text-5xl font-black mb-3 text-center text-green-500 tracking-tighter italic drop-shadow-lg">DOUBLE ELIMINATION</h1>
+        <p class="text-zinc-400 text-center mb-12 font-medium">Todos os jogos são MD1, exceto a Grande Final (MD3). Clique no time para defini-lo como <strong class="text-green-500">vencedor</strong> da partida.</p>
         
-        <div id="bracket-container" class="flex flex-col md:flex-row justify-center items-start gap-12 overflow-x-auto pb-24 px-4">
+        <div id="bracket-container" class="flex flex-col md:flex-row justify-center items-start gap-12 overflow-x-auto pb-28 px-4">
         </div>
         
-        <div class="sticky bottom-6 mt-4 flex flex-wrap justify-center gap-4 bg-black/90 p-4 rounded-2xl backdrop-blur-md border border-zinc-800 z-50 shadow-[0_0_30px_rgba(0,0,0,0.8)] mx-auto max-w-4xl">
-            <button onclick="exportToCSV()" class="bg-green-700 hover:bg-green-600 px-6 py-3 rounded-full font-bold border border-green-600 text-white shadow-lg transition-all flex-1 text-sm md:text-base">📥 Exportar Planilha de Resultados</button>
-            <button onclick="resetBracket()" class="bg-yellow-600 hover:bg-yellow-500 px-6 py-3 rounded-full font-bold border border-yellow-700 text-black shadow-lg transition-all flex-1 text-sm md:text-base">Redefinir Chaveamento</button>
-            <button onclick="location.reload()" class="bg-zinc-800 hover:bg-zinc-700 px-6 py-3 rounded-full font-bold border border-zinc-700 text-white flex-1 text-sm md:text-base">Encerrar e Novo Draft</button>
+        <div class="fixed bottom-6 left-1/2 -translate-x-1/2 w-[90%] md:w-auto flex flex-wrap justify-center gap-4 bg-black/95 p-4 rounded-2xl backdrop-blur-xl border border-zinc-800 z-50 shadow-[0_20px_50px_rgba(0,0,0,0.9)]">
+            <button onclick="exportToCSV()" class="bg-green-700 hover:bg-green-600 px-6 py-3 rounded-xl font-bold border border-green-600 text-white shadow-lg transition-all flex-1 text-sm md:text-base hover:shadow-[0_0_15px_rgba(34,197,94,0.4)]">📥 Exportar Planilha</button>
+            <button onclick="resetBracket()" class="bg-yellow-700 hover:bg-yellow-600 px-6 py-3 rounded-xl font-bold border border-yellow-700 text-white shadow-lg transition-all flex-1 text-sm md:text-base">Refazer Chave</button>
+            <button onclick="location.reload()" class="bg-zinc-800 hover:bg-zinc-700 px-6 py-3 rounded-xl font-bold border border-zinc-700 text-zinc-300 flex-1 text-sm md:text-base">Novo Draft</button>
         </div>
     </div>
 
@@ -124,6 +124,7 @@ SUP - JogadorY GM
     let captains = [];
     let teams = [];
     const numTeams = 4;
+    const teamLabels = ["Time A", "Time B", "Time C", "Time D"];
     
     let turnIndex = 0;
     let snakeCycle = [];
@@ -144,12 +145,12 @@ SUP - JogadorY GM
     };
 
     let dBracket = {
-        m1: { id: 'm1', title: "(1) Semifinal Superior (MD1)", t1: null, t2: null, winner: null, loser: null },
-        m2: { id: 'm2', title: "(2) Semifinal Superior (MD1)", t1: null, t2: null, winner: null, loser: null },
-        m3: { id: 'm3', title: "(3) Final Superior (MD1)", t1: null, t2: null, winner: null, loser: null },
-        m4: { id: 'm4', title: "(4) Semifinal Inferior (MD1)", t1: null, t2: null, winner: null, loser: null },
-        m5: { id: 'm5', title: "(5) Final Inferior (MD1)", t1: null, t2: null, winner: null, loser: null },
-        m6: { id: 'm6', title: "GRANDE FINAL (MD3)", t1: null, t2: null, winner: null, loser: null }
+        m1: { id: 'm1', title: "(1) Semifinal Sup.", t1: null, t2: null, winner: null, loser: null, color1: null, color2: null },
+        m2: { id: 'm2', title: "(2) Semifinal Sup.", t1: null, t2: null, winner: null, loser: null, color1: null, color2: null },
+        m3: { id: 'm3', title: "(3) Final Sup.", t1: null, t2: null, winner: null, loser: null, color1: null, color2: null },
+        m4: { id: 'm4', title: "(4) Semifinal Inf.", t1: null, t2: null, winner: null, loser: null, color1: null, color2: null },
+        m5: { id: 'm5', title: "(5) Final Inf.", t1: null, t2: null, winner: null, loser: null, color1: null, color2: null },
+        m6: { id: 'm6', title: "GRANDE FINAL", t1: null, t2: null, winner: null, loser: null, color1: null, color2: null, colorChoiceMade: false }
     };
 
     function shuffle(array) {
@@ -172,10 +173,8 @@ SUP - JogadorY GM
         lines.forEach((line, index) => {
             const match = line.trim().match(regex);
             if (match) {
-                // Filtro para remover traços ou hifens no final do nome capturado
                 let rawName = match[2].trim();
                 let cleanName = rawName.replace(/\s*[-–—]\s*$/, '');
-
                 const p = { 
                     id: index, name: cleanName, tier: match[3].toUpperCase(), 
                     lane: match[1].toUpperCase(), weight: tierWeights[match[3].toUpperCase()] || 0 
@@ -200,8 +199,8 @@ SUP - JogadorY GM
             return;
         }
 
-        // Seleção de Capitães: Rota Mais Parelha / Equilibrada
-        let bestLane = 'TOP';
+        // Prioridade de seleção para JG se houver empate em variância
+        let bestLane = 'JG'; 
         let minVariance = Infinity;
         let bestLaneScore = 0; 
         
@@ -209,8 +208,6 @@ SUP - JogadorY GM
             let players = laneGroups[lane];
             let sum = players.reduce((acc, p) => acc + p.weight, 0);
             let mean = sum / players.length;
-            
-            // Calcula a variância (quão distantes os elos estão da média)
             let variance = players.reduce((acc, p) => acc + Math.pow(p.weight - mean, 2), 0) / players.length;
 
             if (variance < minVariance) {
@@ -218,24 +215,23 @@ SUP - JogadorY GM
                 bestLane = lane;
                 bestLaneScore = sum; 
             } else if (variance === minVariance) {
-                if (sum > bestLaneScore) {
+                if (sum > bestLaneScore || (sum === bestLaneScore && lane === 'JG')) {
                     bestLane = lane;
                     bestLaneScore = sum;
                 }
             }
         });
 
-        // Os capitães são sorteados aleatoriamente para definir a ordem
         captains = shuffle([...laneGroups[bestLane]]);
-        let extraDisplayInfo = ` &mdash; <span class="text-green-400 font-black">Rota Chefe: ${bestLane} (Mais Equilibrada)</span>`;
+        let extraDisplayInfo = ` &mdash; <span class="text-green-400 font-bold">Rota Chefe: ${bestLane}</span>`;
 
         document.getElementById('team-count-display').innerHTML = `4 Times${extraDisplayInfo}`;
         
         document.getElementById('captain-preview').innerHTML = captains.map((c, idx) => `
-            <div class="bg-black/60 p-5 rounded-lg border border-green-900 text-left flex flex-col justify-between h-full">
-                <div class="text-sm text-green-500 font-bold uppercase tracking-widest">Time ${idx + 1}</div>
+            <div class="bg-black/80 p-5 rounded-xl border border-green-900/60 text-left flex flex-col justify-between h-full shadow-lg">
+                <div class="text-xs text-green-500 font-black uppercase tracking-widest">${teamLabels[idx]}</div>
                 <div class="font-black text-2xl text-white truncate my-2">${c.name}</div>
-                <div class="text-sm text-zinc-300 font-semibold uppercase mt-auto pt-3 border-t border-green-900/50">${c.lane} - ${c.tier}</div>
+                <div class="text-xs text-zinc-400 font-bold uppercase mt-auto pt-3 border-t border-zinc-800/80">${c.lane} - ${c.tier}</div>
             </div>
         `).join('');
 
@@ -293,9 +289,15 @@ SUP - JogadorY GM
         clearInterval(timer);
         timeLeft = 30;
         document.getElementById('timer-display').innerText = "30s";
+        document.getElementById('timer-display').className = "text-4xl md:text-5xl font-mono font-black bg-black/80 px-6 py-2 rounded-xl border-2 border-green-600 shadow-[0_0_20px_rgba(34,197,94,0.3)] text-green-500";
+        
         timer = setInterval(() => {
             timeLeft--;
             document.getElementById('timer-display').innerText = timeLeft + 's';
+            if (timeLeft <= 5) {
+                document.getElementById('timer-display').classList.add('timer-low', 'border-red-600');
+                document.getElementById('timer-display').classList.remove('border-green-600', 'text-green-500');
+            }
             if (timeLeft <= 0) { clearInterval(timer); autoPick(); }
         }, 1000);
     }
@@ -337,34 +339,32 @@ SUP - JogadorY GM
 
     function renderDraft() {
         const curIdx = snakeCycle[turnIndex % snakeCycle.length];
-        document.getElementById('current-captain-name').innerHTML = `${captains[curIdx].name}`;
+        document.getElementById('current-captain-name').innerHTML = `${teamLabels[curIdx]} <span class="text-2xl md:text-3xl text-green-500/80 font-medium">(${captains[curIdx].name})</span>`;
         
-        // Atualiza o contador nos dois lugares (Desktop e Mobile)
-        const remainingHtml = `<span class="font-bold text-green-500">${playersPool.length}</span> restantes`;
+        const remainingHtml = `Restam <span class="text-green-500">${playersPool.length}</span> jogadores`;
         document.getElementById('remaining-count').innerHTML = remainingHtml;
         document.getElementById('remaining-count-mobile').innerHTML = remainingHtml;
 
         document.getElementById('teams-container').innerHTML = teams.map((t, i) => `
-            <div class="bg-zinc-900/90 p-5 rounded-xl border-2 ${i === curIdx ? 'border-green-500 scale-105 shadow-[0_0_15px_rgba(34,197,94,0.3)]' : 'border-zinc-800 opacity-80'}">
-                <h4 class="font-black text-green-500 mb-4 text-base">Time ${captains[i].name} <span class="text-xs text-zinc-400 font-normal ml-1">(${captains[i].tier})</span></h4>
+            <div class="bg-black/80 p-5 rounded-2xl border-2 transition-all ${i === curIdx ? 'border-green-500 scale-105 shadow-[0_0_25px_rgba(34,197,94,0.2)] z-10' : 'border-zinc-800/80 opacity-70'}">
+                <h4 class="font-black text-white mb-4 text-lg border-b border-zinc-800 pb-2">${teamLabels[i]} <span class="text-xs text-zinc-500 font-bold ml-1 uppercase">(Cap: ${captains[i].name})</span></h4>
                 ${['TOP', 'JG', 'MID', 'ADC', 'SUP'].map(l => {
                     const p = t.find(pl => pl.lane === l);
-                    return `<div class="flex justify-between items-center border-b border-zinc-800/50 pb-1 mb-1">
-                        <span class="font-bold text-zinc-400 text-[11px]">${l}</span>
-                        <span class="truncate ml-2 text-sm font-medium ${p ? 'text-white' : 'text-zinc-600'}">${p ? p.name : 'Vago'}</span>
+                    return `<div class="flex justify-between items-center py-1.5 border-b border-zinc-800/30 last:border-0">
+                        <span class="font-black text-zinc-500 text-[11px] w-8">${l}</span>
+                        <span class="truncate ml-2 text-sm font-bold ${p ? 'text-green-50' : 'text-zinc-700'}">${p ? p.name : 'Aguardando...'}</span>
                     </div>`;
                 }).join('')}
             </div>`).join('');
 
-        // Elo visível e estilizado nos cartões de jogadores disponíveis
         document.getElementById('available-players').innerHTML = playersPool.map(p => {
             const block = teams[curIdx].some(tp => tp.lane === p.lane);
-            return `<button onclick="${block ? '' : `pickPlayer(${p.id})`}" class="p-3 rounded-lg text-left border flex flex-col gap-1 ${block ? 'bg-black/60 border-red-900/30 opacity-40 cursor-not-allowed' : 'bg-zinc-900/80 border-zinc-800 hover:border-green-500'}">
+            return `<button onclick="${block ? '' : `pickPlayer(${p.id})`}" class="p-3 rounded-xl text-left border flex flex-col gap-1 transition-all ${block ? 'bg-black/40 border-red-900/20 opacity-30 cursor-not-allowed' : 'bg-zinc-900/90 border-zinc-700 hover:border-green-500 hover:bg-zinc-800 shadow-sm'}">
                 <div class="flex justify-between items-center w-full">
-                    <span class="block text-[10px] font-bold ${block ? 'text-red-500' : 'text-green-500'} uppercase">${p.lane}</span>
-                    <span class="text-[10px] font-bold ${block ? 'text-zinc-600' : 'text-zinc-400'} uppercase">${p.tier}</span>
+                    <span class="block text-[10px] font-black ${block ? 'text-red-600' : 'text-green-500'} uppercase tracking-wider">${p.lane}</span>
+                    <span class="text-[10px] font-bold ${block ? 'text-zinc-700' : 'text-zinc-400'} uppercase">${p.tier}</span>
                 </div>
-                <div class="text-base font-bold truncate w-full mt-1 ${block ? 'text-zinc-500' : 'text-white'}">${p.name}</div>
+                <div class="text-base font-bold truncate w-full mt-1 ${block ? 'text-zinc-600' : 'text-white'}">${p.name}</div>
             </button>`;
         }).join('');
     }
@@ -374,15 +374,18 @@ SUP - JogadorY GM
         document.getElementById('draft-screen').classList.add('hidden');
         document.getElementById('result-screen').classList.remove('hidden');
         document.getElementById('final-teams').innerHTML = teams.map((t, i) => `
-            <div class="bg-zinc-900 p-6 rounded-2xl border border-green-900/30">
-                <h3 class="text-2xl font-black text-white text-center mb-6">${captains[i].name}</h3>
+            <div class="bg-black/90 p-6 rounded-2xl border border-green-900/50 shadow-xl relative overflow-hidden">
+                <div class="absolute top-0 left-0 w-full h-1 bg-green-500/50"></div>
+                <h3 class="text-3xl font-black text-white text-center mb-6 drop-shadow-md">${teamLabels[i]}</h3>
+                <div class="space-y-3">
                 ${['TOP', 'JG', 'MID', 'ADC', 'SUP'].map(l => {
                     const p = t.find(pl => pl.lane === l);
-                    return `<div class="flex justify-between border-b border-zinc-800/50 pb-2 mb-2">
-                        <span class="font-bold text-zinc-400 text-xs">${l}</span>
-                        <div class="text-sm font-bold ${!p ? 'text-red-500' : 'text-white'}">${p ? p.name : 'Vago'}</div>
+                    return `<div class="flex items-center justify-between bg-zinc-900/50 p-3 rounded-lg border border-zinc-800/50">
+                        <span class="font-black text-green-500/70 text-xs w-8">${l}</span>
+                        <div class="text-base font-bold ${!p ? 'text-red-500' : 'text-white'}">${p ? p.name : 'Vago'}</div>
                     </div>`;
                 }).join('')}
+                </div>
             </div>`).join('');
     }
 
@@ -390,7 +393,7 @@ SUP - JogadorY GM
         document.getElementById('result-screen').classList.add('hidden');
         document.getElementById('bracket-screen').classList.remove('hidden');
         
-        let bTeams = teams.map((t, idx) => ({ id: idx, name: "T." + captains[idx].name }));
+        let bTeams = teams.map((t, idx) => ({ id: idx, name: teamLabels[idx] }));
         bTeams = shuffle(bTeams);
 
         dBracket.m1.t1 = bTeams[0]; dBracket.m1.t2 = bTeams[1];
@@ -399,10 +402,17 @@ SUP - JogadorY GM
         updateDoubleElimination();
     }
 
+    function setFinalColors(t1Color) {
+        dBracket.m6.color1 = t1Color;
+        dBracket.m6.color2 = t1Color === 'blue' ? 'red' : 'blue';
+        dBracket.m6.colorChoiceMade = true;
+        renderDoubleElimination();
+    }
+
     function setMatchWinner(mId, teamNum) {
         let m = dBracket[mId];
         if (!m.t1 || !m.t2) return; 
-        
+        if (mId === 'm6' && !m.colorChoiceMade) return; // Trava escolha antes da cor na final
         if (m.winner) return;
 
         m.winner = teamNum === 1 ? m.t1 : m.t2;
@@ -431,33 +441,77 @@ SUP - JogadorY GM
 
         if (b.m6.winner && (b.m6.winner.id !== b.m6.t1?.id && b.m6.winner.id !== b.m6.t2?.id)) { b.m6.winner = null; b.m6.loser = null; }
 
+        // Sorteio Aleatório de Lados (Azul/Vermelho) para M1 até M5
+        ['m1', 'm2', 'm3', 'm4', 'm5'].forEach(mId => {
+            const m = dBracket[mId];
+            if (m.t1 && m.t2 && (!m.color1 || !m.color2)) {
+                const colors = Math.random() > 0.5 ? ['blue', 'red'] : ['red', 'blue'];
+                m.color1 = colors[0];
+                m.color2 = colors[1];
+            }
+            if (!m.t1 || !m.t2) { m.color1 = null; m.color2 = null; }
+        });
+
+        // Reset da escolha da M6 caso o chaveamento volte atrás
+        if (!b.m6.t1 || !b.m6.t2) {
+            b.m6.colorChoiceMade = false;
+            b.m6.color1 = null;
+            b.m6.color2 = null;
+        }
+
         renderDoubleElimination();
     }
 
     function createMatchCard(mId) {
         const m = dBracket[mId];
-        
-        const baseClasses1 = m.winner ? 
-            (m.winner.id === m.t1?.id ? 'bg-green-900/60 text-green-400 font-black cursor-default' : 'opacity-40 text-zinc-500 cursor-default') : 
-            'hover:bg-zinc-800 text-zinc-300 cursor-pointer';
 
-        const baseClasses2 = m.winner ? 
-            (m.winner.id === m.t2?.id ? 'bg-green-900/60 text-green-400 font-black cursor-default' : 'opacity-40 text-zinc-500 cursor-default') : 
-            'hover:bg-zinc-800 text-zinc-300 cursor-pointer';
+        // UI Especial de Escolha para a Grande Final
+        if (mId === 'm6' && m.t1 && m.t2 && !m.colorChoiceMade) {
+            return `
+                <div class="bg-black/95 border-2 border-yellow-500/80 rounded-2xl p-5 w-64 shadow-[0_0_30px_rgba(234,179,8,0.3)] z-10 relative text-center">
+                    <div class="text-[11px] text-yellow-500 font-black mb-3 uppercase tracking-widest">${m.title}</div>
+                    <p class="text-sm text-zinc-300 mb-4 leading-snug"><span class="font-black text-white text-lg">${m.t1.name}</span> <br/><span class="text-[10px] text-yellow-600 uppercase tracking-widest">(Invicto)</span><br/><br/>Escolha o seu lado:</p>
+                    <div class="flex gap-3 justify-center">
+                        <button onclick="setFinalColors('blue')" class="flex-1 bg-blue-900/40 hover:bg-blue-600/60 text-blue-400 hover:text-white py-2.5 rounded-lg border border-blue-600 transition-all font-black shadow-[0_0_15px_rgba(37,99,235,0.3)]">AZUL</button>
+                        <button onclick="setFinalColors('red')" class="flex-1 bg-red-900/40 hover:bg-red-600/60 text-red-400 hover:text-white py-2.5 rounded-lg border border-red-600 transition-all font-black shadow-[0_0_15px_rgba(220,38,38,0.3)]">VERM</button>
+                    </div>
+                </div>
+            `;
+        }
 
-        const btn1 = `p-2 rounded transition ${baseClasses1}`;
-        const btn2 = `p-2 rounded transition ${baseClasses2}`;
+        const getBtnHTML = (team, color, isWinner, isLoser, teamNum) => {
+            let baseClasses = 'hover:bg-zinc-800 text-zinc-300 border-zinc-700/50 border cursor-pointer';
+            let labelHtml = '';
+
+            if (color === 'blue') {
+                baseClasses = isWinner ? 'bg-blue-900/80 text-blue-50 font-black border-blue-500 border-2 shadow-[0_0_20px_rgba(59,130,246,0.4)] cursor-default' : 'bg-blue-950/40 hover:bg-blue-900/60 text-blue-200 border-blue-800 border hover:border-blue-400 cursor-pointer';
+                labelHtml = `<span class="text-[9px] uppercase font-black tracking-widest text-blue-400 bg-blue-950/80 px-2 py-0.5 rounded-sm float-right mt-[1px]">Azul</span>`;
+            } else if (color === 'red') {
+                baseClasses = isWinner ? 'bg-red-900/80 text-red-50 font-black border-red-500 border-2 shadow-[0_0_20px_rgba(239,68,68,0.4)] cursor-default' : 'bg-red-950/40 hover:bg-red-900/60 text-red-200 border-red-800 border hover:border-red-400 cursor-pointer';
+                labelHtml = `<span class="text-[9px] uppercase font-black tracking-widest text-red-400 bg-red-950/80 px-2 py-0.5 rounded-sm float-right mt-[1px]">Verm</span>`;
+            }
+
+            if (isLoser) {
+                baseClasses = 'opacity-30 text-zinc-500 bg-zinc-900/50 border-zinc-800 border cursor-default grayscale';
+            }
+
+            return `
+                <div class="p-2.5 rounded-lg transition-all ${baseClasses}" onclick="setMatchWinner('${mId}', ${teamNum})">
+                    ${team ? team.name : '<span class="italic text-zinc-600 font-normal">A Definir</span>'}
+                    ${team && color && !isLoser ? labelHtml : ''}
+                </div>
+            `;
+        };
+
+        const btn1 = getBtnHTML(m.t1, m.color1, m.winner?.id === m.t1?.id, m.winner && m.winner.id !== m.t1?.id, 1);
+        const btn2 = getBtnHTML(m.t2, m.color2, m.winner?.id === m.t2?.id, m.winner && m.winner.id !== m.t2?.id, 2);
 
         return `
-            <div class="bg-black/90 border ${m.winner ? 'border-green-900/30' : 'border-green-500/60 hover:border-green-400'} rounded-lg p-3 w-56 shadow-lg transition-all z-10 relative">
-                <div class="text-[10px] text-green-500 font-bold mb-2 text-center border-b border-green-900/30 pb-1">${m.title}</div>
-                <div class="${btn1}" onclick="setMatchWinner('${mId}', 1)">
-                    ${m.t1 ? m.t1.name : '<span class="italic text-zinc-700">A Definir</span>'}
-                </div>
-                <div class="border-t border-zinc-800/50 my-1"></div>
-                <div class="${btn2}" onclick="setMatchWinner('${mId}', 2)">
-                    ${m.t2 ? m.t2.name : '<span class="italic text-zinc-700">A Definir</span>'}
-                </div>
+            <div class="bg-black/95 border ${m.winner ? 'border-zinc-800/80' : 'border-zinc-500/30 hover:border-zinc-400'} rounded-2xl p-3.5 w-60 shadow-xl transition-all z-10 relative">
+                <div class="text-[10px] text-zinc-400 font-black mb-3 text-center border-b border-zinc-800 pb-1.5 uppercase tracking-widest">${m.title}</div>
+                ${btn1}
+                <div class="text-center text-[10px] text-zinc-600 font-black my-1.5">VS</div>
+                ${btn2}
             </div>
         `;
     }
@@ -465,30 +519,32 @@ SUP - JogadorY GM
     function renderDoubleElimination() {
         const container = document.getElementById('bracket-container');
         container.innerHTML = `
-            <div class="flex flex-col gap-8 justify-center">
-                <div class="text-zinc-500 font-bold uppercase text-xs tracking-widest text-center mb-[-10px]">Chave Superior</div>
+            <div class="flex flex-col gap-10 justify-center">
+                <div class="text-green-500 font-black uppercase text-xs tracking-widest text-center mb-[-15px]">Chave Superior</div>
                 ${createMatchCard('m1')}
                 ${createMatchCard('m2')}
                 
                 <div class="h-8 border-b-2 border-dashed border-zinc-800"></div>
                 
-                <div class="text-zinc-500 font-bold uppercase text-xs tracking-widest text-center mb-[-10px] text-red-900">Chave Inferior</div>
+                <div class="text-red-600 font-black uppercase text-xs tracking-widest text-center mb-[-15px]">Chave Inferior</div>
                 ${createMatchCard('m4')}
             </div>
 
-            <div class="flex flex-col gap-8 justify-start pt-12">
+            <div class="flex flex-col gap-10 justify-start pt-14">
                 ${createMatchCard('m3')}
-                <div class="h-24"></div>
+                <div class="h-[104px]"></div>
                 ${createMatchCard('m5')}
             </div>
 
-            <div class="flex flex-row justify-center items-center pt-[150px] gap-8">
+            <div class="flex flex-row justify-center items-center pt-[170px] gap-8 relative">
+                <div class="absolute left-[-32px] top-[225px] w-8 border-b-2 border-zinc-700"></div>
+                
                 ${createMatchCard('m6')}
                 ${dBracket.m6.winner ? `
-                    <div class="animate-bounce text-center shrink-0">
-                        <div class="text-5xl mb-2">🏆</div>
-                        <div class="text-green-400 font-black text-2xl text-center shadow-black drop-shadow-md">CAMPEÃO</div>
-                        <div class="text-white font-bold text-xl text-center mt-1 bg-green-900/50 px-6 py-2 rounded-full border border-green-500">${dBracket.m6.winner.name}</div>
+                    <div class="animate-bounce text-center shrink-0 ml-4">
+                        <div class="text-6xl mb-2 drop-shadow-lg">🏆</div>
+                        <div class="text-green-400 font-black text-3xl text-center shadow-black drop-shadow-xl tracking-tighter">CAMPEÃO</div>
+                        <div class="text-white font-black text-2xl text-center mt-2 bg-gradient-to-r from-green-900 to-green-800 px-8 py-3 rounded-full border-2 border-green-500 shadow-[0_0_30px_rgba(34,197,94,0.3)]">${dBracket.m6.winner.name}</div>
                     </div>
                 ` : ''}
             </div>
@@ -496,6 +552,7 @@ SUP - JogadorY GM
     }
 
     function resetBracket() {
+        if(!confirm("Tem certeza que deseja apagar os resultados do chaveamento?")) return;
         const matches = ['m1', 'm2', 'm3', 'm4', 'm5', 'm6'];
         matches.forEach(m => {
             dBracket[m].winner = null;
@@ -546,7 +603,7 @@ SUP - JogadorY GM
         const encodedUri = encodeURI(csvContent);
         const link = document.createElement("a");
         link.setAttribute("href", encodedUri);
-        link.setAttribute("download", "Resultados_RK_Draft_List.csv");
+        link.setAttribute("download", "Resultados_RK_Draft_DoubleElim.csv");
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
