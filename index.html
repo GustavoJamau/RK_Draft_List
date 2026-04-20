@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>RK Draft List & Double Elimination</title>
+    <title>RK Draft</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         body { 
@@ -100,12 +100,12 @@ SUP - JogadorY GM
         
         <div class="mt-20 flex flex-col md:flex-row justify-center gap-6 max-w-2xl mx-auto">
             <button onclick="location.reload()" class="bg-zinc-900 hover:bg-zinc-800 px-8 py-4 rounded-xl font-bold transition-all border border-zinc-700 text-zinc-300 w-full md:w-auto">Resetar Tudo</button>
-            <button onclick="startTournament()" class="bg-gradient-to-r from-green-600 to-green-500 hover:from-green-500 hover:to-green-400 px-10 py-4 rounded-xl font-black transition-all transform hover:scale-105 shadow-[0_0_20px_rgba(34,197,94,0.4)] text-black w-full md:w-auto uppercase tracking-wider">Gerar Chaveamento (Double Elim)</button>
+            <button onclick="startTournament()" class="bg-gradient-to-r from-green-600 to-green-500 hover:from-green-500 hover:to-green-400 px-10 py-4 rounded-xl font-black transition-all transform hover:scale-105 shadow-[0_0_20px_rgba(34,197,94,0.4)] text-black w-full md:w-auto uppercase tracking-wider">Gerar Chaveamento (RK Draft)</button>
         </div>
     </div>
 
     <div id="bracket-screen" class="hidden max-w-[95vw] mx-auto py-10">
-        <h1 class="text-4xl md:text-5xl font-black mb-3 text-center text-green-500 tracking-tighter italic drop-shadow-lg">DOUBLE ELIMINATION</h1>
+        <h1 class="text-4xl md:text-5xl font-black mb-3 text-center text-green-500 tracking-tighter italic drop-shadow-lg">RK DRAFT</h1>
         <p class="text-zinc-400 text-center mb-12 font-medium">Todos os jogos são MD1, exceto a Grande Final (MD3). Clique no time para defini-lo como <strong class="text-green-500">vencedor</strong> da partida.</p>
         
         <div id="bracket-container" class="flex flex-col md:flex-row justify-center items-start gap-12 overflow-x-auto pb-28 px-4">
@@ -603,7 +603,7 @@ SUP - JogadorY GM
         const encodedUri = encodeURI(csvContent);
         const link = document.createElement("a");
         link.setAttribute("href", encodedUri);
-        link.setAttribute("download", "Resultados_RK_Draft_DoubleElim.csv");
+        link.setAttribute("download", "Resultados_RK_Draft.csv");
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
