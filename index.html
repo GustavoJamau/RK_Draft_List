@@ -36,9 +36,29 @@
             <div>
                 <h3 class="text-green-500 font-black mb-2 text-base md:text-lg uppercase tracking-widest">Regras do Torneio</h3>
                 <p class="text-zinc-300 text-sm md:text-base leading-relaxed">
-                    <strong class="text-white">Capitães:</strong> A rota com os elos mais equilibrados será definida como a rota dos capitães. A ordem de escolha é sorteada.<br>
+                    <strong class="text-white">Capitães:</strong> A rota dos capitães será definida conforme a regra escolhida abaixo. A ordem de escolha é sorteada.<br>
                     <strong class="text-white mt-2 block">Formação:</strong> Modo Draft (Escolha), onde os times escolhem seus membros em turnos estilo "Snake".
                 </p>
+            </div>
+        </div>
+
+        <div class="mb-8">
+            <h3 class="text-green-500 font-bold mb-3 uppercase tracking-widest text-sm">Definição da Rota dos Capitães</h3>
+            <div class="flex flex-col md:flex-row gap-4">
+                <label class="flex-1 bg-black/60 border border-green-900/50 rounded-xl p-4 cursor-pointer hover:border-green-500 transition flex items-start gap-3">
+                    <input type="radio" name="captain-rule" value="balanced" checked class="w-5 h-5 accent-green-500 mt-0.5">
+                    <div>
+                        <div class="text-white font-bold">Mais Equilibrados</div>
+                        <div class="text-zinc-400 text-xs mt-1">A rota com a menor diferença de elo entre os jogadores.</div>
+                    </div>
+                </label>
+                <label class="flex-1 bg-black/60 border border-green-900/50 rounded-xl p-4 cursor-pointer hover:border-green-500 transition flex items-start gap-3">
+                    <input type="radio" name="captain-rule" value="highest" class="w-5 h-5 accent-green-500 mt-0.5">
+                    <div>
+                        <div class="text-white font-bold">Maior Elo</div>
+                        <div class="text-zinc-400 text-xs mt-1">A rota com a maior soma geral de elos dos jogadores.</div>
+                    </div>
+                </label>
             </div>
         </div>
 
@@ -144,7 +164,6 @@ SUP - JogadorY GM
         'FERRO': 1, 'IRON': 1
     };
 
-    // Nova Função de Cores dos Elos
     function getTierColor(tier) {
         switch(tier) {
             case 'CHALL': case 'CHALLENGER': case 'DESAFIANTE': return 'text-amber-300 drop-shadow-[0_0_8px_rgba(252,211,77,0.8)]'; 
@@ -216,9 +235,12 @@ SUP - JogadorY GM
             return;
         }
 
+        const rule = document.querySelector('input[name="captain-rule"]:checked').value;
+
         let bestLane = 'JG'; 
         let minVariance = Infinity;
         let bestLaneScore = 0; 
+        let maxScore = -Infinity;
         
         Object.keys(laneGroups).forEach(lane => {
             let players = laneGroups[lane];
@@ -226,24 +248,37 @@ SUP - JogadorY GM
             let mean = sum / players.length;
             let variance = players.reduce((acc, p) => acc + Math.pow(p.weight - mean, 2), 0) / players.length;
 
-            if (variance < minVariance) {
-                minVariance = variance;
-                bestLane = lane;
-                bestLaneScore = sum; 
-            } else if (variance === minVariance) {
-                if (sum > bestLaneScore || (sum === bestLaneScore && lane === 'JG')) {
+            if (rule === 'balanced') {
+                if (variance < minVariance) {
+                    minVariance = variance;
                     bestLane = lane;
                     bestLaneScore = sum;
+                } else if (variance === minVariance) {
+                    if (sum > bestLaneScore || (sum === bestLaneScore && lane === 'JG')) {
+                        bestLane = lane;
+                        bestLaneScore = sum;
+                    }
+                }
+            } else if (rule === 'highest') {
+                if (sum > maxScore) {
+                    maxScore = sum;
+                    bestLane = lane;
+                } else if (sum === maxScore) {
+                    // Critério de desempate caso o peso seja igual: pega o de menor variância
+                    if (variance < minVariance || (variance === minVariance && lane === 'JG')) {
+                        bestLane = lane;
+                        minVariance = variance;
+                    }
                 }
             }
         });
 
         captains = shuffle([...laneGroups[bestLane]]);
-        let extraDisplayInfo = ` &mdash; <span class="text-green-400 font-bold">Rota Chefe: ${bestLane}</span>`;
+        let methodText = rule === 'balanced' ? 'Mais Equilibrados' : 'Maior Elo';
+        let extraDisplayInfo = ` &mdash; <span class="text-green-400 font-bold">Rota Chefe: ${bestLane} (${methodText})</span>`;
 
         document.getElementById('team-count-display').innerHTML = `4 Times${extraDisplayInfo}`;
         
-        // Aplicação de cores nos capitães
         document.getElementById('captain-preview').innerHTML = captains.map((c, idx) => `
             <div class="bg-black/80 p-5 rounded-xl border border-green-900/60 text-left flex flex-col justify-between h-full shadow-lg">
                 <div class="text-xs text-green-500 font-black uppercase tracking-widest">${teamLabels[idx]}</div>
@@ -376,7 +411,6 @@ SUP - JogadorY GM
                 }).join('')}
             </div>`).join('');
 
-        // Aplicação de cores na lista de disponíveis
         document.getElementById('available-players').innerHTML = playersPool.map(p => {
             const block = teams[curIdx].some(tp => tp.lane === p.lane);
             return `<button onclick="${block ? '' : `pickPlayer(${p.id})`}" class="p-3 rounded-xl text-left border flex flex-col gap-1 transition-all ${block ? 'bg-black/40 border-red-900/20 opacity-30 cursor-not-allowed' : 'bg-zinc-900/90 border-zinc-700 hover:border-green-500 hover:bg-zinc-800 shadow-sm'}">
@@ -432,7 +466,7 @@ SUP - JogadorY GM
     function setMatchWinner(mId, teamNum) {
         let m = dBracket[mId];
         if (!m.t1 || !m.t2) return; 
-        if (mId === 'm6' && !m.colorChoiceMade) return; // Trava escolha antes da cor na final
+        if (mId === 'm6' && !m.colorChoiceMade) return; 
         if (m.winner) return;
 
         m.winner = teamNum === 1 ? m.t1 : m.t2;
@@ -461,7 +495,6 @@ SUP - JogadorY GM
 
         if (b.m6.winner && (b.m6.winner.id !== b.m6.t1?.id && b.m6.winner.id !== b.m6.t2?.id)) { b.m6.winner = null; b.m6.loser = null; }
 
-        // Sorteio Aleatório de Lados (Azul/Vermelho) para M1 até M5
         ['m1', 'm2', 'm3', 'm4', 'm5'].forEach(mId => {
             const m = dBracket[mId];
             if (m.t1 && m.t2 && (!m.color1 || !m.color2)) {
@@ -472,7 +505,6 @@ SUP - JogadorY GM
             if (!m.t1 || !m.t2) { m.color1 = null; m.color2 = null; }
         });
 
-        // Reset da escolha da M6 caso o chaveamento volte atrás
         if (!b.m6.t1 || !b.m6.t2) {
             b.m6.colorChoiceMade = false;
             b.m6.color1 = null;
@@ -485,7 +517,6 @@ SUP - JogadorY GM
     function createMatchCard(mId) {
         const m = dBracket[mId];
 
-        // UI Especial de Escolha para a Grande Final
         if (mId === 'm6' && m.t1 && m.t2 && !m.colorChoiceMade) {
             return `
                 <div class="bg-black/95 border-2 border-yellow-500/80 rounded-2xl p-5 w-64 shadow-[0_0_30px_rgba(234,179,8,0.3)] z-10 relative text-center">
@@ -557,8 +588,6 @@ SUP - JogadorY GM
             </div>
 
             <div class="flex flex-row justify-center items-center pt-[170px] gap-8 relative">
-                <div class="absolute left-[-32px] top-[225px] w-8 border-b-2 border-zinc-700"></div>
-                
                 ${createMatchCard('m6')}
                 ${dBracket.m6.winner ? `
                     <div class="animate-bounce text-center shrink-0 ml-4">
