@@ -152,7 +152,7 @@ SUP - JogadorY GM
 
     <div id="bracket-screen" class="hidden max-w-[95vw] mx-auto py-10">
         <h1 class="text-4xl md:text-5xl font-black mb-3 text-center text-green-500 tracking-tighter italic drop-shadow-lg">DRAFT RK</h1>
-        <p class="text-zinc-400 text-center mb-12 font-medium">Todos os jogos são MD1, exceto a Grande Final (MD3). Clique no time para defini-lo como <strong class="text-green-500">vencedor</strong> da partida.</p>
+        <p class="text-zinc-400 text-center mb-12 font-medium">Clique no time para defini-lo como <strong class="text-green-500">vencedor</strong> da partida.</p>
         
         <div id="bracket-container" class="flex flex-col md:flex-row justify-center items-start gap-12 overflow-x-auto pb-28 px-4">
         </div>
@@ -580,10 +580,14 @@ SUP - JogadorY GM
 
     function createMatchCard(mId) {
         const m = dBracket[mId];
+        const isMD3 = mId === 'm6';
+        
+        const mdTag = `<div class="absolute -top-3 right-3 ${isMD3 ? 'bg-green-600 text-black shadow-[0_0_10px_rgba(34,197,94,0.5)]' : 'bg-zinc-800 text-zinc-400 border-zinc-700'} border text-[9px] px-2 py-0.5 rounded font-black tracking-widest uppercase">${isMD3 ? 'MD3' : 'MD1'}</div>`;
 
         if (mId === 'm6' && m.t1 && m.t2 && !m.colorChoiceMade) {
             return `
-                <div class="bg-black/95 border-2 border-yellow-500/80 rounded-2xl p-5 w-64 shadow-[0_0_30px_rgba(234,179,8,0.3)] z-10 relative text-center">
+                <div class="bg-black/95 border-2 border-yellow-500/80 rounded-2xl p-5 w-64 shadow-[0_0_30px_rgba(234,179,8,0.3)] z-10 relative text-center mt-4">
+                    ${mdTag}
                     <div class="text-[11px] text-yellow-500 font-black mb-3 uppercase tracking-widest">${m.title}</div>
                     <p class="text-sm text-zinc-300 mb-4 leading-snug"><span class="font-black text-white text-lg">${m.t1.name}</span> <br/><span class="text-[10px] text-yellow-600 uppercase tracking-widest">(Invicto/Lado A)</span><br/><br/>Escolha o seu lado:</p>
                     <div class="flex gap-3 justify-center">
@@ -622,7 +626,8 @@ SUP - JogadorY GM
         const btn2 = getBtnHTML(m.t2, m.color2, m.winner?.id === m.t2?.id, m.winner && m.winner.id !== m.t2?.id, 2);
 
         return `
-            <div class="bg-black/95 border ${m.winner ? 'border-zinc-800/80' : 'border-zinc-500/30 hover:border-zinc-400'} rounded-2xl p-3.5 w-60 shadow-xl transition-all z-10 relative">
+            <div class="bg-black/95 border ${m.winner ? 'border-zinc-800/80' : 'border-zinc-500/30 hover:border-zinc-400'} rounded-2xl p-3.5 w-60 shadow-xl transition-all z-10 relative mt-4">
+                ${mdTag}
                 <div class="text-[10px] text-zinc-400 font-black mb-3 text-center border-b border-zinc-800 pb-1.5 uppercase tracking-widest">${m.title}</div>
                 ${btn1}
                 <div class="text-center text-[10px] text-zinc-600 font-black my-1.5">VS</div>
@@ -641,9 +646,7 @@ SUP - JogadorY GM
                     ${createMatchCard('m1')}
                     ${createMatchCard('m2')}
                     
-                    <div class="h-8 border-b-2 border-dashed border-zinc-800"></div>
-                    
-                    <div class="text-red-600 font-black uppercase text-xs tracking-widest text-center mb-[-15px]">Chave Inferior</div>
+                    <div class="text-red-600 font-black uppercase text-xs tracking-widest text-center mb-[-15px] mt-6">Chave Inferior</div>
                     ${createMatchCard('m4')}
                 </div>
 
@@ -666,30 +669,31 @@ SUP - JogadorY GM
             `;
         } else {
             container.innerHTML = `
-                <div class="flex flex-col gap-10 justify-center">
-                    <div class="text-zinc-500 font-black uppercase text-xs tracking-widest text-center mb-[-15px]">Quartas de Final</div>
-                    ${createMatchCard('m1')}
-                    ${createMatchCard('m2')}
-                </div>
-                <div class="flex flex-col gap-10 justify-center">
-                    <div class="text-zinc-500 font-black uppercase text-xs tracking-widest text-center mb-[-15px]">Semifinais</div>
-                    ${createMatchCard('m3')}
-                    ${createMatchCard('m4')}
-                </div>
-                <div class="flex flex-col gap-10 justify-center">
-                    <div class="text-green-500 font-black uppercase text-xs tracking-widest text-center mb-[-15px]">Grande Final</div>
-                    ${createMatchCard('m6')}
-                    <div class="h-4"></div>
-                    <div class="text-zinc-500 font-black uppercase text-xs tracking-widest text-center mb-[-15px]">Disputa 3º Lugar</div>
-                    ${createMatchCard('m5')}
-                </div>
-                ${dBracket.m6.winner ? `
-                    <div class="animate-bounce text-center shrink-0 self-center ml-4 mt-8">
-                        <div class="text-6xl mb-2 drop-shadow-lg">🏆</div>
-                        <div class="text-green-400 font-black text-3xl text-center shadow-black drop-shadow-xl tracking-tighter">CAMPEÃO</div>
-                        <div class="text-white font-black text-2xl text-center mt-2 bg-gradient-to-r from-green-900 to-green-800 px-8 py-3 rounded-full border-2 border-green-500 shadow-[0_0_30px_rgba(34,197,94,0.3)]">${dBracket.m6.winner.name}</div>
+                <div class="flex flex-col md:flex-row gap-12 items-center md:items-start min-w-max pb-10 mt-6">
+                    <div class="flex flex-col gap-10 justify-center">
+                        <div class="text-zinc-500 font-black uppercase text-[10px] tracking-widest text-center mb-[-15px]">Quartas de Final</div>
+                        ${createMatchCard('m1')}
+                        ${createMatchCard('m2')}
                     </div>
-                ` : ''}
+                    <div class="flex flex-col gap-10 justify-center">
+                        <div class="text-zinc-500 font-black uppercase text-[10px] tracking-widest text-center mb-[-15px]">Semifinais</div>
+                        ${createMatchCard('m3')}
+                        ${createMatchCard('m4')}
+                    </div>
+                    <div class="flex flex-col gap-10 justify-center">
+                        <div class="text-green-500 font-black uppercase text-[10px] tracking-widest text-center mb-[-15px]">Grande Final</div>
+                        ${createMatchCard('m6')}
+                        <div class="text-zinc-500 font-black uppercase text-[10px] tracking-widest text-center mb-[-15px] mt-2">Disputa 3º Lugar</div>
+                        ${createMatchCard('m5')}
+                    </div>
+                    ${dBracket.m6.winner ? `
+                        <div class="animate-bounce text-center shrink-0 self-center ml-4 mt-8">
+                            <div class="text-6xl mb-2 drop-shadow-lg">🏆</div>
+                            <div class="text-green-400 font-black text-3xl text-center shadow-black drop-shadow-xl tracking-tighter">CAMPEÃO</div>
+                            <div class="text-white font-black text-2xl text-center mt-2 bg-gradient-to-r from-green-900 to-green-800 px-8 py-3 rounded-full border-2 border-green-500 shadow-[0_0_30px_rgba(34,197,94,0.3)]">${dBracket.m6.winner.name}</div>
+                        </div>
+                    ` : ''}
+                </div>
             `;
         }
     }
