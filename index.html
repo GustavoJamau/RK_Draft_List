@@ -36,27 +36,27 @@
             <div>
                 <h3 class="text-green-500 font-black mb-2 text-base md:text-lg uppercase tracking-widest">Regras do Torneio</h3>
                 <p class="text-zinc-300 text-sm md:text-base leading-relaxed">
-                    <strong class="text-white">Capitães:</strong> A rota dos capitães será definida conforme a regra escolhida abaixo. A ordem de escolha é sorteada.<br>
+                    <strong class="text-white">Capitães:</strong> A definição dos capitães seguirá a regra escolhida abaixo. A ordem de escolha no draft é sorteada.<br>
                     <strong class="text-white mt-2 block">Formação:</strong> Modo Draft (Escolha), onde os times escolhem seus membros em turnos estilo "Snake".
                 </p>
             </div>
         </div>
 
         <div class="mb-8">
-            <h3 class="text-green-500 font-bold mb-3 uppercase tracking-widest text-sm">Definição da Rota dos Capitães</h3>
+            <h3 class="text-green-500 font-bold mb-3 uppercase tracking-widest text-sm">Definição dos Capitães</h3>
             <div class="flex flex-col md:flex-row gap-4">
                 <label class="flex-1 bg-black/60 border border-green-900/50 rounded-xl p-4 cursor-pointer hover:border-green-500 transition flex items-start gap-3">
-                    <input type="radio" name="captain-rule" value="balanced" checked class="w-5 h-5 accent-green-500 mt-0.5">
+                    <input type="radio" name="captain-rule" value="highest" checked class="w-5 h-5 accent-green-500 mt-0.5">
                     <div>
-                        <div class="text-white font-bold">Mais Equilibrados</div>
-                        <div class="text-zinc-400 text-xs mt-1">A rota com a menor diferença de elo entre os jogadores.</div>
+                        <div class="text-white font-bold">Maior Elo Individual</div>
+                        <div class="text-zinc-400 text-xs mt-1">Os 4 jogadores com os maiores elos de toda a lista (independente da rota).</div>
                     </div>
                 </label>
                 <label class="flex-1 bg-black/60 border border-green-900/50 rounded-xl p-4 cursor-pointer hover:border-green-500 transition flex items-start gap-3">
-                    <input type="radio" name="captain-rule" value="highest" class="w-5 h-5 accent-green-500 mt-0.5">
+                    <input type="radio" name="captain-rule" value="balanced" class="w-5 h-5 accent-green-500 mt-0.5">
                     <div>
-                        <div class="text-white font-bold">Maior Elo</div>
-                        <div class="text-zinc-400 text-xs mt-1">A rota com a maior soma geral de elos dos jogadores.</div>
+                        <div class="text-white font-bold">Rota Mais Equilibrada</div>
+                        <div class="text-zinc-400 text-xs mt-1">A rota específica que possui a menor diferença de elo entre seus 4 jogadores.</div>
                     </div>
                 </label>
             </div>
@@ -237,18 +237,20 @@ SUP - JogadorY GM
 
         const rule = document.querySelector('input[name="captain-rule"]:checked').value;
 
-        let bestLane = 'JG'; 
-        let minVariance = Infinity;
-        let bestLaneScore = 0; 
-        let maxScore = -Infinity;
-        
-        Object.keys(laneGroups).forEach(lane => {
-            let players = laneGroups[lane];
-            let sum = players.reduce((acc, p) => acc + p.weight, 0);
-            let mean = sum / players.length;
-            let variance = players.reduce((acc, p) => acc + Math.pow(p.weight - mean, 2), 0) / players.length;
+        let methodText = "";
+        let extraDisplayInfo = "";
 
-            if (rule === 'balanced') {
+        if (rule === 'balanced') {
+            let bestLane = 'JG'; 
+            let minVariance = Infinity;
+            let bestLaneScore = 0; 
+            
+            Object.keys(laneGroups).forEach(lane => {
+                let players = laneGroups[lane];
+                let sum = players.reduce((acc, p) => acc + p.weight, 0);
+                let mean = sum / players.length;
+                let variance = players.reduce((acc, p) => acc + Math.pow(p.weight - mean, 2), 0) / players.length;
+
                 if (variance < minVariance) {
                     minVariance = variance;
                     bestLane = lane;
@@ -259,23 +261,21 @@ SUP - JogadorY GM
                         bestLaneScore = sum;
                     }
                 }
-            } else if (rule === 'highest') {
-                if (sum > maxScore) {
-                    maxScore = sum;
-                    bestLane = lane;
-                } else if (sum === maxScore) {
-                    // Critério de desempate caso o peso seja igual: pega o de menor variância
-                    if (variance < minVariance || (variance === minVariance && lane === 'JG')) {
-                        bestLane = lane;
-                        minVariance = variance;
-                    }
-                }
-            }
-        });
+            });
 
-        captains = shuffle([...laneGroups[bestLane]]);
-        let methodText = rule === 'balanced' ? 'Mais Equilibrados' : 'Maior Elo';
-        let extraDisplayInfo = ` &mdash; <span class="text-green-400 font-bold">Rota Chefe: ${bestLane} (${methodText})</span>`;
+            captains = shuffle([...laneGroups[bestLane]]);
+            methodText = 'Mais Equilibrada';
+            extraDisplayInfo = ` &mdash; <span class="text-green-400 font-bold">Rota Chefe: ${bestLane} (${methodText})</span>`;
+        } 
+        else if (rule === 'highest') {
+            // Ordena TODOS os jogadores do maior elo para o menor e pega os 4 primeiros
+            let sortedPlayers = [...allPlayers].sort((a, b) => b.weight - a.weight);
+            let top4 = sortedPlayers.slice(0, 4);
+            
+            captains = shuffle(top4);
+            methodText = 'Maior Elo Individual';
+            extraDisplayInfo = ` &mdash; <span class="text-green-400 font-bold">Capitães: ${methodText}</span>`;
+        }
 
         document.getElementById('team-count-display').innerHTML = `4 Times${extraDisplayInfo}`;
         
