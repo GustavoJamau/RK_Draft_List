@@ -144,6 +144,23 @@ SUP - JogadorY GM
         'FERRO': 1, 'IRON': 1
     };
 
+    // Nova Função de Cores dos Elos
+    function getTierColor(tier) {
+        switch(tier) {
+            case 'CHALL': case 'CHALLENGER': case 'DESAFIANTE': return 'text-amber-300 drop-shadow-[0_0_8px_rgba(252,211,77,0.8)]'; 
+            case 'GM': case 'GRAO MESTRE': case 'GRÃO MESTRE': case 'GRAO-MESTRE': case 'GRANDMASTER': return 'text-red-500 drop-shadow-[0_0_5px_rgba(239,68,68,0.5)]'; 
+            case 'MESTRE': case 'MASTER': return 'text-purple-400 drop-shadow-[0_0_5px_rgba(192,132,252,0.5)]'; 
+            case 'DIMA': case 'DIAMANTE': case 'DIAMOND': return 'text-blue-400';
+            case 'ESMERALDA': case 'EMERALD': return 'text-emerald-500';
+            case 'PLATINA': case 'PLATINUM': case 'PLAT': return 'text-teal-400';
+            case 'OURO': case 'GOLD': return 'text-yellow-400';
+            case 'PRATA': case 'SILVER': return 'text-slate-300';
+            case 'BRONZE': return 'text-amber-700';
+            case 'FERRO': case 'IRON': return 'text-zinc-500';
+            default: return 'text-zinc-400';
+        }
+    }
+
     let dBracket = {
         m1: { id: 'm1', title: "(1) Semifinal Sup.", t1: null, t2: null, winner: null, loser: null, color1: null, color2: null },
         m2: { id: 'm2', title: "(2) Semifinal Sup.", t1: null, t2: null, winner: null, loser: null, color1: null, color2: null },
@@ -199,7 +216,6 @@ SUP - JogadorY GM
             return;
         }
 
-        // Prioridade de seleção para JG se houver empate em variância
         let bestLane = 'JG'; 
         let minVariance = Infinity;
         let bestLaneScore = 0; 
@@ -227,11 +243,14 @@ SUP - JogadorY GM
 
         document.getElementById('team-count-display').innerHTML = `4 Times${extraDisplayInfo}`;
         
+        // Aplicação de cores nos capitães
         document.getElementById('captain-preview').innerHTML = captains.map((c, idx) => `
             <div class="bg-black/80 p-5 rounded-xl border border-green-900/60 text-left flex flex-col justify-between h-full shadow-lg">
                 <div class="text-xs text-green-500 font-black uppercase tracking-widest">${teamLabels[idx]}</div>
                 <div class="font-black text-2xl text-white truncate my-2">${c.name}</div>
-                <div class="text-xs text-zinc-400 font-bold uppercase mt-auto pt-3 border-t border-zinc-800/80">${c.lane} - ${c.tier}</div>
+                <div class="text-xs font-bold uppercase mt-auto pt-3 border-t border-zinc-800/80">
+                    <span class="text-zinc-400">${c.lane} - </span><span class="${getTierColor(c.tier)}">${c.tier}</span>
+                </div>
             </div>
         `).join('');
 
@@ -357,12 +376,13 @@ SUP - JogadorY GM
                 }).join('')}
             </div>`).join('');
 
+        // Aplicação de cores na lista de disponíveis
         document.getElementById('available-players').innerHTML = playersPool.map(p => {
             const block = teams[curIdx].some(tp => tp.lane === p.lane);
             return `<button onclick="${block ? '' : `pickPlayer(${p.id})`}" class="p-3 rounded-xl text-left border flex flex-col gap-1 transition-all ${block ? 'bg-black/40 border-red-900/20 opacity-30 cursor-not-allowed' : 'bg-zinc-900/90 border-zinc-700 hover:border-green-500 hover:bg-zinc-800 shadow-sm'}">
                 <div class="flex justify-between items-center w-full">
                     <span class="block text-[10px] font-black ${block ? 'text-red-600' : 'text-green-500'} uppercase tracking-wider">${p.lane}</span>
-                    <span class="text-[10px] font-bold ${block ? 'text-zinc-700' : 'text-zinc-400'} uppercase">${p.tier}</span>
+                    <span class="text-[10px] font-bold ${block ? 'text-zinc-700' : getTierColor(p.tier)} uppercase">${p.tier}</span>
                 </div>
                 <div class="text-base font-bold truncate w-full mt-1 ${block ? 'text-zinc-600' : 'text-white'}">${p.name}</div>
             </button>`;
