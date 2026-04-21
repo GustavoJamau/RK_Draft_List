@@ -19,13 +19,19 @@
         ::-webkit-scrollbar { width: 8px; height: 8px; }
         ::-webkit-scrollbar-track { background: rgba(0,0,0,0.5); }
         ::-webkit-scrollbar-thumb { background: #166534; border-radius: 4px; }
+        
+        .grid-auto-fit {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+        }
     </style>
 </head>
 <body class="text-white min-h-screen p-4 font-sans selection:bg-green-500 selection:text-black">
 
     <div id="setup-screen" class="max-w-4xl mx-auto bg-zinc-950/90 backdrop-blur-md p-8 md:p-10 rounded-2xl shadow-2xl mt-10 border border-green-900/50">
         <h1 class="text-4xl md:text-5xl font-black mb-3 text-green-500 tracking-tight">RK Draft List</h1>
-        <p class="mb-8 text-zinc-400 text-base md:text-lg">Cole a lista com exatamente 20 jogadores (4 de cada lane) para formar 4 times.</p>
+        <p class="mb-8 text-zinc-400 text-base md:text-lg">Selecione a quantidade de times e cole a lista de jogadores com o número exato por rota.</p>
         
         <div class="bg-black/60 p-6 rounded-xl border border-green-900/40 mb-8 flex items-start gap-4 shadow-inner">
             <div class="text-green-500 mt-1">
@@ -43,20 +49,40 @@
         </div>
 
         <div class="mb-8">
+            <h3 class="text-green-500 font-bold mb-3 uppercase tracking-widest text-sm">Quantidade de Times</h3>
+            <div class="flex flex-col md:flex-row gap-4">
+                <label class="flex-1 bg-black/60 border border-green-900/50 rounded-xl p-4 cursor-pointer hover:border-green-500 transition flex items-start gap-3">
+                    <input type="radio" name="team-count" value="4" checked class="w-5 h-5 accent-green-500 mt-0.5">
+                    <div>
+                        <div class="text-white font-bold">4 Times</div>
+                        <div class="text-zinc-400 text-xs mt-1">Requer exatamente 20 jogadores (4 de cada rota).</div>
+                    </div>
+                </label>
+                <label class="flex-1 bg-black/60 border border-green-900/50 rounded-xl p-4 cursor-pointer hover:border-green-500 transition flex items-start gap-3">
+                    <input type="radio" name="team-count" value="6" class="w-5 h-5 accent-green-500 mt-0.5">
+                    <div>
+                        <div class="text-white font-bold">6 Times</div>
+                        <div class="text-zinc-400 text-xs mt-1">Requer exatamente 30 jogadores (6 de cada rota).</div>
+                    </div>
+                </label>
+            </div>
+        </div>
+
+        <div class="mb-8">
             <h3 class="text-green-500 font-bold mb-3 uppercase tracking-widest text-sm">Definição dos Capitães</h3>
             <div class="flex flex-col md:flex-row gap-4">
                 <label class="flex-1 bg-black/60 border border-green-900/50 rounded-xl p-4 cursor-pointer hover:border-green-500 transition flex items-start gap-3">
                     <input type="radio" name="captain-rule" value="highest" checked class="w-5 h-5 accent-green-500 mt-0.5">
                     <div>
                         <div class="text-white font-bold">Maior Elo Individual</div>
-                        <div class="text-zinc-400 text-xs mt-1">Os 4 jogadores com os maiores elos de toda a lista (independente da rota).</div>
+                        <div class="text-zinc-400 text-xs mt-1">Os jogadores com os maiores elos de toda a lista (independente da rota).</div>
                     </div>
                 </label>
                 <label class="flex-1 bg-black/60 border border-green-900/50 rounded-xl p-4 cursor-pointer hover:border-green-500 transition flex items-start gap-3">
                     <input type="radio" name="captain-rule" value="balanced" class="w-5 h-5 accent-green-500 mt-0.5">
                     <div>
                         <div class="text-white font-bold">Rota Mais Equilibrada</div>
-                        <div class="text-zinc-400 text-xs mt-1">A rota específica que possui a menor diferença de elo entre seus 4 jogadores.</div>
+                        <div class="text-zinc-400 text-xs mt-1">A rota específica que possui a menor diferença de elo entre seus jogadores.</div>
                     </div>
                 </label>
             </div>
@@ -69,14 +95,14 @@ MID - Beltrano GOLD
 ADC - JogadorX PLATINA
 SUP - JogadorY GM
 
-(Adicione todos os 20 jogadores, 4 de cada rota)"></textarea>
+(Cole aqui a sua lista com os jogadores necessários)"></textarea>
         <button onclick="analyzeList()" class="w-full bg-gradient-to-r from-green-700 to-green-500 hover:from-green-600 hover:to-green-400 py-5 rounded-xl font-black text-xl transition shadow-[0_0_20px_rgba(34,197,94,0.3)] text-black uppercase tracking-wider">Processar Jogadores</button>
     </div>
 
     <div id="confirm-screen" class="hidden max-w-5xl mx-auto bg-zinc-950/90 backdrop-blur-md p-8 md:p-12 rounded-2xl shadow-2xl mt-10 text-center border border-green-900/50">
         <h2 class="text-3xl md:text-4xl font-black mb-4 text-green-500">Capitães Definidos</h2>
-        <p class="text-zinc-400 mb-10 text-lg md:text-xl italic">Total de Times: <span id="team-count-display" class="font-bold text-white">4 Times</span></p>
-        <div id="captain-preview" class="grid grid-cols-2 md:grid-cols-4 gap-6 mb-10"></div>
+        <p class="text-zinc-400 mb-10 text-lg md:text-xl italic">Total de Times: <span id="team-count-display" class="font-bold text-white"></span></p>
+        <div id="captain-preview" class="grid-auto-fit mb-10"></div>
         <div class="flex gap-4">
             <button onclick="backToSetup()" class="flex-1 bg-zinc-900 hover:bg-zinc-800 py-4 rounded-xl font-bold text-lg border border-zinc-700 transition">Voltar</button>
             <button onclick="startProcess()" class="flex-1 bg-green-600 hover:bg-green-500 py-4 rounded-xl font-black text-lg shadow-[0_0_15px_rgba(34,197,94,0.3)] text-black transition uppercase tracking-wider" id="btn-start-process">Iniciar Draft</button>
@@ -143,8 +169,8 @@ SUP - JogadorY GM
     let playersPool = [];
     let captains = [];
     let teams = [];
-    const numTeams = 4;
-    const teamLabels = ["Time A", "Time B", "Time C", "Time D"];
+    let numTeams = 4;
+    let teamLabels = [];
     
     let turnIndex = 0;
     let snakeCycle = [];
@@ -181,11 +207,11 @@ SUP - JogadorY GM
     }
 
     let dBracket = {
-        m1: { id: 'm1', title: "(1) Semifinal Sup.", t1: null, t2: null, winner: null, loser: null, color1: null, color2: null },
-        m2: { id: 'm2', title: "(2) Semifinal Sup.", t1: null, t2: null, winner: null, loser: null, color1: null, color2: null },
-        m3: { id: 'm3', title: "(3) Final Sup.", t1: null, t2: null, winner: null, loser: null, color1: null, color2: null },
-        m4: { id: 'm4', title: "(4) Semifinal Inf.", t1: null, t2: null, winner: null, loser: null, color1: null, color2: null },
-        m5: { id: 'm5', title: "(5) Final Inf.", t1: null, t2: null, winner: null, loser: null, color1: null, color2: null },
+        m1: { id: 'm1', title: "", t1: null, t2: null, winner: null, loser: null, color1: null, color2: null },
+        m2: { id: 'm2', title: "", t1: null, t2: null, winner: null, loser: null, color1: null, color2: null },
+        m3: { id: 'm3', title: "", t1: null, t2: null, winner: null, loser: null, color1: null, color2: null },
+        m4: { id: 'm4', title: "", t1: null, t2: null, winner: null, loser: null, color1: null, color2: null },
+        m5: { id: 'm5', title: "", t1: null, t2: null, winner: null, loser: null, color1: null, color2: null },
         m6: { id: 'm6', title: "GRANDE FINAL", t1: null, t2: null, winner: null, loser: null, color1: null, color2: null, colorChoiceMade: false }
     };
 
@@ -199,6 +225,9 @@ SUP - JogadorY GM
     }
 
     function analyzeList() {
+        numTeams = parseInt(document.querySelector('input[name="team-count"]:checked').value);
+        teamLabels = Array.from({length: numTeams}, (_, i) => "Time " + String.fromCharCode(65 + i));
+
         const text = document.getElementById('player-list').value;
         const lines = text.split('\n').filter(l => l.trim() !== '');
         const laneGroups = { TOP: [], JG: [], MID: [], ADC: [], SUP: [] };
@@ -220,18 +249,20 @@ SUP - JogadorY GM
             }
         });
 
-        if (allPlayers.length !== 20) {
-            alert(`Atenção: Você forneceu ${allPlayers.length} jogadores válidos, mas este formato exige exatamente 20 jogadores (4 times completos).`);
+        const expectedPlayers = numTeams * 5;
+
+        if (allPlayers.length !== expectedPlayers) {
+            alert(`Atenção: Você forneceu ${allPlayers.length} jogadores válidos, mas para ${numTeams} times são necessários exatamente ${expectedPlayers} jogadores.`);
             return;
         }
 
         let errors = [];
         Object.keys(laneGroups).forEach(lane => {
-            if (laneGroups[lane].length !== 4) errors.push(`A lane ${lane} tem ${laneGroups[lane].length} jogadores (precisa de 4).`);
+            if (laneGroups[lane].length !== numTeams) errors.push(`A lane ${lane} tem ${laneGroups[lane].length} jogadores (precisa de ${numTeams}).`);
         });
 
         if (errors.length > 0) {
-            alert(`Para formar 4 times perfeitos, você precisa de exatamente 4 jogadores em cada lane.\n\nErros:\n- ` + errors.join('\n- '));
+            alert(`Para formar ${numTeams} times perfeitos, você precisa de exatamente ${numTeams} jogadores em cada lane.\n\nErros:\n- ` + errors.join('\n- '));
             return;
         }
 
@@ -268,16 +299,15 @@ SUP - JogadorY GM
             extraDisplayInfo = ` &mdash; <span class="text-green-400 font-bold">Rota Chefe: ${bestLane} (${methodText})</span>`;
         } 
         else if (rule === 'highest') {
-            // Ordena TODOS os jogadores do maior elo para o menor e pega os 4 primeiros
             let sortedPlayers = [...allPlayers].sort((a, b) => b.weight - a.weight);
-            let top4 = sortedPlayers.slice(0, 4);
+            let topX = sortedPlayers.slice(0, numTeams);
             
-            captains = shuffle(top4);
+            captains = shuffle(topX);
             methodText = 'Maior Elo Individual';
             extraDisplayInfo = ` &mdash; <span class="text-green-400 font-bold">Capitães: ${methodText}</span>`;
         }
 
-        document.getElementById('team-count-display').innerHTML = `4 Times${extraDisplayInfo}`;
+        document.getElementById('team-count-display').innerHTML = `${numTeams} Times${extraDisplayInfo}`;
         
         document.getElementById('captain-preview').innerHTML = captains.map((c, idx) => `
             <div class="bg-black/80 p-5 rounded-xl border border-green-900/60 text-left flex flex-col justify-between h-full shadow-lg">
@@ -450,17 +480,36 @@ SUP - JogadorY GM
         let bTeams = teams.map((t, idx) => ({ id: idx, name: teamLabels[idx] }));
         bTeams = shuffle(bTeams);
 
-        dBracket.m1.t1 = bTeams[0]; dBracket.m1.t2 = bTeams[1];
-        dBracket.m2.t1 = bTeams[2]; dBracket.m2.t2 = bTeams[3];
+        if (numTeams === 4) {
+            dBracket.m1.title = "(1) Semifinal Sup.";
+            dBracket.m2.title = "(2) Semifinal Sup.";
+            dBracket.m3.title = "(3) Final Sup.";
+            dBracket.m4.title = "(4) Semifinal Inf.";
+            dBracket.m5.title = "(5) Final Inf.";
+            
+            dBracket.m1.t1 = bTeams[0]; dBracket.m1.t2 = bTeams[1];
+            dBracket.m2.t1 = bTeams[2]; dBracket.m2.t2 = bTeams[3];
+        } else {
+            dBracket.m1.title = "(1) Quartas de Final 1";
+            dBracket.m2.title = "(2) Quartas de Final 2";
+            dBracket.m3.title = "(3) Semifinal 1";
+            dBracket.m4.title = "(4) Semifinal 2";
+            dBracket.m5.title = "Disputa 3º Lugar";
+            
+            dBracket.m1.t1 = bTeams[0]; dBracket.m1.t2 = bTeams[1];
+            dBracket.m2.t1 = bTeams[2]; dBracket.m2.t2 = bTeams[3];
+            dBracket.m3.t1 = bTeams[4];
+            dBracket.m4.t1 = bTeams[5];
+        }
 
-        updateDoubleElimination();
+        updateBracket();
     }
 
     function setFinalColors(t1Color) {
         dBracket.m6.color1 = t1Color;
         dBracket.m6.color2 = t1Color === 'blue' ? 'red' : 'blue';
         dBracket.m6.colorChoiceMade = true;
-        renderDoubleElimination();
+        renderBracket();
     }
 
     function setMatchWinner(mId, teamNum) {
@@ -471,27 +520,42 @@ SUP - JogadorY GM
 
         m.winner = teamNum === 1 ? m.t1 : m.t2;
         m.loser = teamNum === 1 ? m.t2 : m.t1;
-        updateDoubleElimination();
+        updateBracket();
     }
 
-    function updateDoubleElimination() {
+    function updateBracket() {
         let b = dBracket;
 
-        b.m3.t1 = b.m1.winner || null;
-        b.m4.t1 = b.m1.loser || null;
-        b.m3.t2 = b.m2.winner || null;
-        b.m4.t2 = b.m2.loser || null;
+        if (numTeams === 4) {
+            b.m3.t1 = b.m1.winner || null;
+            b.m4.t1 = b.m1.loser || null;
+            b.m3.t2 = b.m2.winner || null;
+            b.m4.t2 = b.m2.loser || null;
 
-        if (b.m3.winner && (b.m3.winner.id !== b.m3.t1?.id && b.m3.winner.id !== b.m3.t2?.id)) { b.m3.winner = null; b.m3.loser = null; }
-        if (b.m4.winner && (b.m4.winner.id !== b.m4.t1?.id && b.m4.winner.id !== b.m4.t2?.id)) { b.m4.winner = null; b.m4.loser = null; }
+            if (b.m3.winner && (b.m3.winner.id !== b.m3.t1?.id && b.m3.winner.id !== b.m3.t2?.id)) { b.m3.winner = null; b.m3.loser = null; }
+            if (b.m4.winner && (b.m4.winner.id !== b.m4.t1?.id && b.m4.winner.id !== b.m4.t2?.id)) { b.m4.winner = null; b.m4.loser = null; }
 
-        b.m5.t1 = b.m4.winner || null;
-        b.m5.t2 = b.m3.loser || null;
+            b.m5.t1 = b.m4.winner || null;
+            b.m5.t2 = b.m3.loser || null;
 
-        if (b.m5.winner && (b.m5.winner.id !== b.m5.t1?.id && b.m5.winner.id !== b.m5.t2?.id)) { b.m5.winner = null; b.m5.loser = null; }
+            if (b.m5.winner && (b.m5.winner.id !== b.m5.t1?.id && b.m5.winner.id !== b.m5.t2?.id)) { b.m5.winner = null; b.m5.loser = null; }
 
-        b.m6.t1 = b.m3.winner || null;
-        b.m6.t2 = b.m5.winner || null;
+            b.m6.t1 = b.m3.winner || null;
+            b.m6.t2 = b.m5.winner || null;
+        } else {
+            b.m3.t2 = b.m1.winner || null;
+            b.m4.t2 = b.m2.winner || null;
+
+            if (b.m3.winner && (b.m3.winner.id !== b.m3.t1?.id && b.m3.winner.id !== b.m3.t2?.id)) { b.m3.winner = null; b.m3.loser = null; }
+            if (b.m4.winner && (b.m4.winner.id !== b.m4.t1?.id && b.m4.winner.id !== b.m4.t2?.id)) { b.m4.winner = null; b.m4.loser = null; }
+
+            b.m5.t1 = b.m3.loser || null;
+            b.m5.t2 = b.m4.loser || null;
+            if (b.m5.winner && (b.m5.winner.id !== b.m5.t1?.id && b.m5.winner.id !== b.m5.t2?.id)) { b.m5.winner = null; b.m5.loser = null; }
+
+            b.m6.t1 = b.m3.winner || null;
+            b.m6.t2 = b.m4.winner || null;
+        }
 
         if (b.m6.winner && (b.m6.winner.id !== b.m6.t1?.id && b.m6.winner.id !== b.m6.t2?.id)) { b.m6.winner = null; b.m6.loser = null; }
 
@@ -511,7 +575,7 @@ SUP - JogadorY GM
             b.m6.color2 = null;
         }
 
-        renderDoubleElimination();
+        renderBracket();
     }
 
     function createMatchCard(mId) {
@@ -521,7 +585,7 @@ SUP - JogadorY GM
             return `
                 <div class="bg-black/95 border-2 border-yellow-500/80 rounded-2xl p-5 w-64 shadow-[0_0_30px_rgba(234,179,8,0.3)] z-10 relative text-center">
                     <div class="text-[11px] text-yellow-500 font-black mb-3 uppercase tracking-widest">${m.title}</div>
-                    <p class="text-sm text-zinc-300 mb-4 leading-snug"><span class="font-black text-white text-lg">${m.t1.name}</span> <br/><span class="text-[10px] text-yellow-600 uppercase tracking-widest">(Invicto)</span><br/><br/>Escolha o seu lado:</p>
+                    <p class="text-sm text-zinc-300 mb-4 leading-snug"><span class="font-black text-white text-lg">${m.t1.name}</span> <br/><span class="text-[10px] text-yellow-600 uppercase tracking-widest">(Invicto/Lado A)</span><br/><br/>Escolha o seu lado:</p>
                     <div class="flex gap-3 justify-center">
                         <button onclick="setFinalColors('blue')" class="flex-1 bg-blue-900/40 hover:bg-blue-600/60 text-blue-400 hover:text-white py-2.5 rounded-lg border border-blue-600 transition-all font-black shadow-[0_0_15px_rgba(37,99,235,0.3)]">BLUE</button>
                         <button onclick="setFinalColors('red')" class="flex-1 bg-red-900/40 hover:bg-red-600/60 text-red-400 hover:text-white py-2.5 rounded-lg border border-red-600 transition-all font-black shadow-[0_0_15px_rgba(220,38,38,0.3)]">RED</button>
@@ -567,37 +631,67 @@ SUP - JogadorY GM
         `;
     }
 
-    function renderDoubleElimination() {
+    function renderBracket() {
         const container = document.getElementById('bracket-container');
-        container.innerHTML = `
-            <div class="flex flex-col gap-10 justify-center">
-                <div class="text-green-500 font-black uppercase text-xs tracking-widest text-center mb-[-15px]">Chave Superior</div>
-                ${createMatchCard('m1')}
-                ${createMatchCard('m2')}
-                
-                <div class="h-8 border-b-2 border-dashed border-zinc-800"></div>
-                
-                <div class="text-red-600 font-black uppercase text-xs tracking-widest text-center mb-[-15px]">Chave Inferior</div>
-                ${createMatchCard('m4')}
-            </div>
+        
+        if (numTeams === 4) {
+            container.innerHTML = `
+                <div class="flex flex-col gap-10 justify-center">
+                    <div class="text-green-500 font-black uppercase text-xs tracking-widest text-center mb-[-15px]">Chave Superior</div>
+                    ${createMatchCard('m1')}
+                    ${createMatchCard('m2')}
+                    
+                    <div class="h-8 border-b-2 border-dashed border-zinc-800"></div>
+                    
+                    <div class="text-red-600 font-black uppercase text-xs tracking-widest text-center mb-[-15px]">Chave Inferior</div>
+                    ${createMatchCard('m4')}
+                </div>
 
-            <div class="flex flex-col gap-10 justify-start pt-14">
-                ${createMatchCard('m3')}
-                <div class="h-[104px]"></div>
-                ${createMatchCard('m5')}
-            </div>
+                <div class="flex flex-col gap-10 justify-start pt-14">
+                    ${createMatchCard('m3')}
+                    <div class="h-[104px]"></div>
+                    ${createMatchCard('m5')}
+                </div>
 
-            <div class="flex flex-row justify-center items-center pt-[170px] gap-8 relative">
-                ${createMatchCard('m6')}
+                <div class="flex flex-row justify-center items-center pt-[170px] gap-8 relative">
+                    ${createMatchCard('m6')}
+                    ${dBracket.m6.winner ? `
+                        <div class="animate-bounce text-center shrink-0 ml-4">
+                            <div class="text-6xl mb-2 drop-shadow-lg">🏆</div>
+                            <div class="text-green-400 font-black text-3xl text-center shadow-black drop-shadow-xl tracking-tighter">CAMPEÃO</div>
+                            <div class="text-white font-black text-2xl text-center mt-2 bg-gradient-to-r from-green-900 to-green-800 px-8 py-3 rounded-full border-2 border-green-500 shadow-[0_0_30px_rgba(34,197,94,0.3)]">${dBracket.m6.winner.name}</div>
+                        </div>
+                    ` : ''}
+                </div>
+            `;
+        } else {
+            container.innerHTML = `
+                <div class="flex flex-col gap-10 justify-center">
+                    <div class="text-zinc-500 font-black uppercase text-xs tracking-widest text-center mb-[-15px]">Quartas de Final</div>
+                    ${createMatchCard('m1')}
+                    ${createMatchCard('m2')}
+                </div>
+                <div class="flex flex-col gap-10 justify-center">
+                    <div class="text-zinc-500 font-black uppercase text-xs tracking-widest text-center mb-[-15px]">Semifinais</div>
+                    ${createMatchCard('m3')}
+                    ${createMatchCard('m4')}
+                </div>
+                <div class="flex flex-col gap-10 justify-center">
+                    <div class="text-green-500 font-black uppercase text-xs tracking-widest text-center mb-[-15px]">Grande Final</div>
+                    ${createMatchCard('m6')}
+                    <div class="h-4"></div>
+                    <div class="text-zinc-500 font-black uppercase text-xs tracking-widest text-center mb-[-15px]">Disputa 3º Lugar</div>
+                    ${createMatchCard('m5')}
+                </div>
                 ${dBracket.m6.winner ? `
-                    <div class="animate-bounce text-center shrink-0 ml-4">
+                    <div class="animate-bounce text-center shrink-0 self-center ml-4 mt-8">
                         <div class="text-6xl mb-2 drop-shadow-lg">🏆</div>
                         <div class="text-green-400 font-black text-3xl text-center shadow-black drop-shadow-xl tracking-tighter">CAMPEÃO</div>
                         <div class="text-white font-black text-2xl text-center mt-2 bg-gradient-to-r from-green-900 to-green-800 px-8 py-3 rounded-full border-2 border-green-500 shadow-[0_0_30px_rgba(34,197,94,0.3)]">${dBracket.m6.winner.name}</div>
                     </div>
                 ` : ''}
-            </div>
-        `;
+            `;
+        }
     }
 
     function resetBracket() {
@@ -607,7 +701,7 @@ SUP - JogadorY GM
             dBracket[m].winner = null;
             dBracket[m].loser = null;
         });
-        updateDoubleElimination();
+        updateBracket();
     }
 
     function exportToCSV() {
@@ -616,12 +710,24 @@ SUP - JogadorY GM
             return;
         }
 
-        const standings = [
-            { pos: "1º Lugar", team: dBracket.m6.winner },
-            { pos: "2º Lugar", team: dBracket.m6.loser },
-            { pos: "3º Lugar", team: dBracket.m5.loser },
-            { pos: "4º Lugar", team: dBracket.m4.loser }
-        ];
+        let standings = [];
+        if (numTeams === 4) {
+            standings = [
+                { pos: "1º Lugar", team: dBracket.m6.winner },
+                { pos: "2º Lugar", team: dBracket.m6.loser },
+                { pos: "3º Lugar", team: dBracket.m5.loser },
+                { pos: "4º Lugar", team: dBracket.m4.loser }
+            ];
+        } else {
+            standings = [
+                { pos: "1º Lugar", team: dBracket.m6.winner },
+                { pos: "2º Lugar", team: dBracket.m6.loser },
+                { pos: "3º Lugar", team: dBracket.m5.winner },
+                { pos: "4º Lugar", team: dBracket.m5.loser },
+                { pos: "5º/6º Lugar", team: dBracket.m1.loser },
+                { pos: "5º/6º Lugar", team: dBracket.m2.loser }
+            ];
+        }
 
         let csvContent = "data:text/csv;charset=utf-8,\uFEFF";
         csvContent += "Colocacao,Nome do Time,TOP,JG,MID,ADC,SUP\n";
