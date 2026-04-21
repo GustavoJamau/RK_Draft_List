@@ -21,6 +21,11 @@
         ::-webkit-scrollbar { width: 8px; height: 8px; }
         ::-webkit-scrollbar-track { background: rgba(0,0,0,0.5); }
         ::-webkit-scrollbar-thumb { background: #166534; border-radius: 4px; }
+        
+        /* Tabela de Classificação */
+        .standings-table th { background: rgba(24, 24, 27, 0.8); color: #71717a; text-transform: uppercase; font-size: 10px; font-weight: 900; letter-spacing: 0.05em; border-bottom: 1px solid #3f3f46; padding: 8px; }
+        .standings-table td { padding: 8px; border-bottom: 1px solid rgba(63, 63, 70, 0.5); font-size: 14px; }
+        .standings-table tr:last-child td { border-bottom: none; }
     </style>
 </head>
 <body class="text-white min-h-screen p-4 font-sans selection:bg-green-500 selection:text-black">
@@ -38,8 +43,8 @@
             <div>
                 <h3 class="text-green-500 font-black mb-2 text-base md:text-lg uppercase tracking-widest">Regras do Torneio</h3>
                 <p class="text-zinc-300 text-sm md:text-base leading-relaxed">
-                    <strong class="text-white">Capitães:</strong> A definição dos capitães seguirá a regra escolhida abaixo. A ordem de escolha no draft é sorteada.<br>
-                    <strong class="text-white mt-2 block">Formação:</strong> Modo Draft (Escolha), onde os times escolhem seus membros em turnos estilo "Snake".
+                    <strong class="text-white">4 Times:</strong> Eliminação Dupla (MD1), Grande Final (MD3).<br>
+                    <strong class="text-white mt-1 block">6 Times:</strong> 2 Grupos (A e B). Todos jogam contra todos no grupo (MD1). O melhor de cada grupo vai para a Grande Final (MD3). Desempate é manual se todos ficarem 1-1.
                 </p>
             </div>
         </div>
@@ -100,7 +105,7 @@ SUP - Ceos CHALLENGER
         <p class="text-zinc-400 mb-10 text-lg md:text-xl italic">Total de Times: <span id="team-count-display" class="font-bold text-white"></span></p>
         <div id="captain-preview" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6 mb-10"></div>
         <div class="flex gap-4 justify-center mt-8">
-            <button onclick="backToSetup()" class="bg-zinc-900 hover:bg-zinc-800 py-4 px-12 rounded-xl font-bold text-lg transition">Voltar</button>
+            <button onclick="backToSetup()" class="bg-zinc-900 hover:bg-zinc-800 py-4 px-12 rounded-xl font-bold text-lg transition border border-zinc-700">Voltar</button>
             <button onclick="startProcess()" class="bg-green-600 hover:bg-green-500 py-4 px-12 rounded-xl font-black text-lg shadow-[0_0_15px_rgba(34,197,94,0.3)] text-black transition uppercase tracking-wider" id="btn-start-process">Iniciar Draft</button>
         </div>
     </div>
@@ -141,7 +146,7 @@ SUP - Ceos CHALLENGER
         <div id="final-teams" class="grid gap-8 text-left" style="grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));"></div>
         
         <div class="mt-20 flex flex-col md:flex-row justify-center gap-6 max-w-2xl mx-auto">
-            <button onclick="location.reload()" class="bg-zinc-900 hover:bg-zinc-800 px-8 py-4 rounded-xl font-bold transition-all w-full md:w-auto">Resetar Tudo</button>
+            <button onclick="location.reload()" class="bg-zinc-900 hover:bg-zinc-800 border border-zinc-700 px-8 py-4 rounded-xl font-bold transition-all w-full md:w-auto">Resetar Tudo</button>
             <button onclick="startTournament()" class="bg-gradient-to-r from-green-600 to-green-500 hover:from-green-500 hover:to-green-400 px-10 py-4 rounded-xl font-black transition-all transform hover:scale-105 shadow-[0_0_20px_rgba(34,197,94,0.4)] text-black w-full md:w-auto uppercase tracking-wider">Gerar Chaveamento</button>
         </div>
     </div>
@@ -150,13 +155,13 @@ SUP - Ceos CHALLENGER
         <h1 class="text-4xl md:text-5xl font-black mb-3 text-center text-green-500 tracking-tighter italic drop-shadow-lg">DRAFT RK</h1>
         <p class="text-zinc-400 text-center mb-12 font-medium">Clique no time para defini-lo como <strong class="text-green-500">vencedor</strong> da partida.</p>
         
-        <div id="bracket-container" class="flex flex-col md:flex-row justify-center items-start gap-12 overflow-x-auto pb-28 px-4">
+        <div id="bracket-container" class="flex flex-col items-center gap-12 pb-28 px-4 w-full">
         </div>
         
         <div class="fixed bottom-6 left-1/2 -translate-x-1/2 w-[90%] md:w-auto flex flex-wrap justify-center gap-4 bg-black/95 p-4 rounded-2xl backdrop-blur-xl border border-zinc-800 z-50 shadow-[0_20px_50px_rgba(0,0,0,0.9)]">
-            <button onclick="exportToCSV()" class="bg-green-700 hover:bg-green-600 px-6 py-3 rounded-xl font-bold text-white transition-all flex-1 text-sm md:text-base hover:shadow-[0_0_15px_rgba(34,197,94,0.4)]">📥 Exportar Planilha</button>
-            <button onclick="resetBracket()" class="bg-yellow-700 hover:bg-yellow-600 px-6 py-3 rounded-xl font-bold text-white transition-all flex-1 text-sm md:text-base">Refazer Chave</button>
-            <button onclick="location.reload()" class="bg-zinc-800 hover:bg-zinc-700 px-6 py-3 rounded-xl font-bold flex-1 text-sm md:text-base">Novo Draft</button>
+            <button onclick="exportToCSV()" class="bg-green-700 hover:bg-green-600 border border-green-600 px-6 py-3 rounded-xl font-bold text-white transition-all flex-1 text-sm md:text-base hover:shadow-[0_0_15px_rgba(34,197,94,0.4)]">📥 Exportar Planilha</button>
+            <button onclick="resetBracket()" class="bg-yellow-700 hover:bg-yellow-600 border border-yellow-700 px-6 py-3 rounded-xl font-bold text-white transition-all flex-1 text-sm md:text-base">Refazer Chave</button>
+            <button onclick="location.reload()" class="bg-zinc-800 hover:bg-zinc-700 border border-zinc-700 px-6 py-3 rounded-xl font-bold flex-1 text-sm md:text-base">Novo Draft</button>
         </div>
     </div>
 
@@ -202,6 +207,7 @@ SUP - Ceos CHALLENGER
         }
     }
 
+    // ESTADO 4 TIMES (Eliminação Dupla)
     let dBracket = {
         m1: { id: 'm1', title: "", t1: null, t2: null, winner: null, loser: null, color1: null, color2: null, tag: 'MD1' },
         m2: { id: 'm2', title: "", t1: null, t2: null, winner: null, loser: null, color1: null, color2: null, tag: 'MD1' },
@@ -209,6 +215,31 @@ SUP - Ceos CHALLENGER
         m4: { id: 'm4', title: "", t1: null, t2: null, winner: null, loser: null, color1: null, color2: null, tag: 'MD1' },
         m5: { id: 'm5', title: "", t1: null, t2: null, winner: null, loser: null, color1: null, color2: null, tag: 'MD1' },
         m6: { id: 'm6', title: "GRANDE FINAL", t1: null, t2: null, winner: null, loser: null, color1: null, color2: null, tag: 'MD3', colorChoiceMade: false }
+    };
+
+    // ESTADO 6 TIMES (Grupos)
+    let gBracket = {
+        groupA: {
+            title: 'Grupo A',
+            teams: [],
+            finalist: null,
+            matches: [
+                { id: 'ga1', title: 'Rodada 1', t1: null, t2: null, winner: null, loser: null, tag: 'MD1' },
+                { id: 'ga2', title: 'Rodada 2', t1: null, t2: null, winner: null, loser: null, tag: 'MD1' },
+                { id: 'ga3', title: 'Rodada 3', t1: null, t2: null, winner: null, loser: null, tag: 'MD1' }
+            ]
+        },
+        groupB: {
+            title: 'Grupo B',
+            teams: [],
+            finalist: null,
+            matches: [
+                { id: 'gb1', title: 'Rodada 1', t1: null, t2: null, winner: null, loser: null, tag: 'MD1' },
+                { id: 'gb2', title: 'Rodada 2', t1: null, t2: null, winner: null, loser: null, tag: 'MD1' },
+                { id: 'gb3', title: 'Rodada 3', t1: null, t2: null, winner: null, loser: null, tag: 'MD1' }
+            ]
+        },
+        final: { id: 'gf', title: "GRANDE FINAL", t1: null, t2: null, winner: null, loser: null, tag: 'MD3', color1: null, color2: null, colorChoiceMade: false }
     };
 
     function shuffle(array) {
@@ -355,7 +386,7 @@ SUP - Ceos CHALLENGER
         document.getElementById('draft-screen').classList.remove('hidden');
         
         if (numTeams === 6) {
-            document.getElementById('teams-container').className = "grid grid-cols-3 grid-rows-2 gap-6 mb-10";
+            document.getElementById('teams-container').className = "grid grid-cols-2 md:grid-cols-3 grid-rows-2 gap-6 mb-10";
         } else {
             document.getElementById('teams-container').className = "grid grid-cols-2 grid-rows-2 gap-6 mb-10";
         }
@@ -485,44 +516,46 @@ SUP - Ceos CHALLENGER
         bTeams = shuffle(bTeams);
 
         if (numTeams === 4) {
-            dBracket.m1.title = "(1) Semifinal Superior 1"; dBracket.m1.tag = 'MD1';
-            dBracket.m2.title = "(2) Semifinal Superior 2"; dBracket.m2.tag = 'MD1';
-            dBracket.m3.title = "(3) Final Superior"; dBracket.m3.tag = 'MD1';
-            dBracket.m4.title = "(4) Semifinal Inferior"; dBracket.m4.tag = 'MD1';
-            dBracket.m5.title = "(5) Final Inferior"; dBracket.m5.tag = 'MD1';
-            dBracket.m6.title = "GRANDE FINAL"; dBracket.m6.tag = 'MD3';
+            dBracket.m1.title = "(1) Semifinal Superior 1"; 
+            dBracket.m2.title = "(2) Semifinal Superior 2"; 
+            dBracket.m3.title = "(3) Final Superior"; 
+            dBracket.m4.title = "(4) Semifinal Inferior"; 
+            dBracket.m5.title = "(5) Final Inferior"; 
             
             dBracket.m1.t1 = bTeams[0]; dBracket.m1.t2 = bTeams[1];
             dBracket.m2.t1 = bTeams[2]; dBracket.m2.t2 = bTeams[3];
+            updateBracketDoubleElim();
         } else {
-            dBracket.m1.title = "(1) Quartas de Final 1"; dBracket.m1.tag = 'MD1';
-            dBracket.m2.title = "(2) Quartas de Final 2"; dBracket.m2.tag = 'MD1';
-            dBracket.m3.title = "(3) Semifinal 1"; dBracket.m3.tag = 'MD1';
-            dBracket.m4.title = "(4) Semifinal 2"; dBracket.m4.tag = 'MD1';
-            dBracket.m5.title = "Disputa 3º Lugar"; dBracket.m5.tag = 'MD1';
-            dBracket.m6.title = "GRANDE FINAL"; dBracket.m6.tag = 'MD3';
-            
-            // Os times mais fortes (Capitães com maior Elo ou melhor lane) que sorteamos devem ser os "Byes".
-            // Para simplificar, bTeams já está embaralhado, então bTeams[0] e bTeams[1] serão os "Byes".
-            dBracket.m1.t1 = bTeams[2]; dBracket.m1.t2 = bTeams[3];
-            dBracket.m2.t1 = bTeams[4]; dBracket.m2.t2 = bTeams[5];
-            
-            // Byes pulam a primeira rodada (Quartas) e já estão nas Semis.
-            dBracket.m3.t1 = bTeams[0]; // Bye 1
-            dBracket.m4.t1 = bTeams[1]; // Bye 2
-        }
+            // Lógica 6 Times (Fase de Grupos)
+            gBracket.groupA.teams = [bTeams[0], bTeams[1], bTeams[2]];
+            gBracket.groupB.teams = [bTeams[3], bTeams[4], bTeams[5]];
 
-        updateBracket();
+            // Partidas Grupo A
+            gBracket.groupA.matches[0].t1 = bTeams[0]; gBracket.groupA.matches[0].t2 = bTeams[1]; // A vs B
+            gBracket.groupA.matches[1].t1 = bTeams[0]; gBracket.groupA.matches[1].t2 = bTeams[2]; // A vs C
+            gBracket.groupA.matches[2].t1 = bTeams[1]; gBracket.groupA.matches[2].t2 = bTeams[2]; // B vs C
+
+            // Partidas Grupo B
+            gBracket.groupB.matches[0].t1 = bTeams[3]; gBracket.groupB.matches[0].t2 = bTeams[4]; // D vs E
+            gBracket.groupB.matches[1].t1 = bTeams[3]; gBracket.groupB.matches[1].t2 = bTeams[5]; // D vs F
+            gBracket.groupB.matches[2].t1 = bTeams[4]; gBracket.groupB.matches[2].t2 = bTeams[5]; // E vs F
+
+            updateGroupStage();
+        }
     }
 
     function setFinalColors(t1Color) {
-        dBracket.m6.color1 = t1Color;
-        dBracket.m6.color2 = t1Color === 'blue' ? 'red' : 'blue';
-        dBracket.m6.colorChoiceMade = true;
-        renderBracket();
+        let finalMatch = numTeams === 4 ? dBracket.m6 : gBracket.final;
+        finalMatch.color1 = t1Color;
+        finalMatch.color2 = t1Color === 'blue' ? 'red' : 'blue';
+        finalMatch.colorChoiceMade = true;
+        numTeams === 4 ? renderBracketDoubleElim() : renderGroupStage();
     }
 
-    function setMatchWinner(mId, teamNum) {
+    //---------------------------------------------------------
+    // LÓGICA DE DUPLA ELIMINAÇÃO (4 TIMES)
+    //---------------------------------------------------------
+    function setMatchWinnerDoubleElim(mId, teamNum) {
         let m = dBracket[mId];
         if (!m.t1 || !m.t2) return; 
         if (mId === 'm6' && !m.colorChoiceMade) return; 
@@ -530,42 +563,26 @@ SUP - Ceos CHALLENGER
 
         m.winner = teamNum === 1 ? m.t1 : m.t2;
         m.loser = teamNum === 1 ? m.t2 : m.t1;
-        updateBracket();
+        updateBracketDoubleElim();
     }
 
-    function updateBracket() {
+    function updateBracketDoubleElim() {
         let b = dBracket;
+        b.m3.t1 = b.m1.winner || null;
+        b.m4.t1 = b.m1.loser || null;
+        b.m3.t2 = b.m2.winner || null;
+        b.m4.t2 = b.m2.loser || null;
 
-        if (numTeams === 4) {
-            b.m3.t1 = b.m1.winner || null;
-            b.m4.t1 = b.m1.loser || null;
-            b.m3.t2 = b.m2.winner || null;
-            b.m4.t2 = b.m2.loser || null;
+        if (b.m3.winner && (b.m3.winner.id !== b.m3.t1?.id && b.m3.winner.id !== b.m3.t2?.id)) { b.m3.winner = null; b.m3.loser = null; }
+        if (b.m4.winner && (b.m4.winner.id !== b.m4.t1?.id && b.m4.winner.id !== b.m4.t2?.id)) { b.m4.winner = null; b.m4.loser = null; }
 
-            if (b.m3.winner && (b.m3.winner.id !== b.m3.t1?.id && b.m3.winner.id !== b.m3.t2?.id)) { b.m3.winner = null; b.m3.loser = null; }
-            if (b.m4.winner && (b.m4.winner.id !== b.m4.t1?.id && b.m4.winner.id !== b.m4.t2?.id)) { b.m4.winner = null; b.m4.loser = null; }
+        b.m5.t1 = b.m4.winner || null;
+        b.m5.t2 = b.m3.loser || null;
 
-            b.m5.t1 = b.m4.winner || null;
-            b.m5.t2 = b.m3.loser || null;
+        if (b.m5.winner && (b.m5.winner.id !== b.m5.t1?.id && b.m5.winner.id !== b.m5.t2?.id)) { b.m5.winner = null; b.m5.loser = null; }
 
-            if (b.m5.winner && (b.m5.winner.id !== b.m5.t1?.id && b.m5.winner.id !== b.m5.t2?.id)) { b.m5.winner = null; b.m5.loser = null; }
-
-            b.m6.t1 = b.m3.winner || null;
-            b.m6.t2 = b.m5.winner || null;
-        } else {
-            b.m3.t2 = b.m1.winner || null;
-            b.m4.t2 = b.m2.winner || null;
-
-            if (b.m3.winner && (b.m3.winner.id !== b.m3.t1?.id && b.m3.winner.id !== b.m3.t2?.id)) { b.m3.winner = null; b.m3.loser = null; }
-            if (b.m4.winner && (b.m4.winner.id !== b.m4.t1?.id && b.m4.winner.id !== b.m4.t2?.id)) { b.m4.winner = null; b.m4.loser = null; }
-
-            b.m5.t1 = b.m3.loser || null;
-            b.m5.t2 = b.m4.loser || null;
-            if (b.m5.winner && (b.m5.winner.id !== b.m5.t1?.id && b.m5.winner.id !== b.m5.t2?.id)) { b.m5.winner = null; b.m5.loser = null; }
-
-            b.m6.t1 = b.m3.winner || null;
-            b.m6.t2 = b.m4.winner || null;
-        }
+        b.m6.t1 = b.m3.winner || null;
+        b.m6.t2 = b.m5.winner || null;
 
         if (b.m6.winner && (b.m6.winner.id !== b.m6.t1?.id && b.m6.winner.id !== b.m6.t2?.id)) { b.m6.winner = null; b.m6.loser = null; }
 
@@ -573,42 +590,115 @@ SUP - Ceos CHALLENGER
             const m = dBracket[mId];
             if (m.t1 && m.t2 && (!m.color1 || !m.color2)) {
                 const colors = Math.random() > 0.5 ? ['blue', 'red'] : ['red', 'blue'];
-                m.color1 = colors[0];
-                m.color2 = colors[1];
+                m.color1 = colors[0]; m.color2 = colors[1];
             }
             if (!m.t1 || !m.t2) { m.color1 = null; m.color2 = null; }
         });
 
-        if (!b.m6.t1 || !b.m6.t2) {
-            b.m6.colorChoiceMade = false;
-            b.m6.color1 = null;
-            b.m6.color2 = null;
-        }
-
-        renderBracket();
+        if (!b.m6.t1 || !b.m6.t2) { b.m6.colorChoiceMade = false; b.m6.color1 = null; b.m6.color2 = null; }
+        renderBracketDoubleElim();
     }
 
-    function createMatchCard(mId) {
-        const m = dBracket[mId];
-        
+    //---------------------------------------------------------
+    // LÓGICA DE GRUPOS (6 TIMES)
+    //---------------------------------------------------------
+    function setGroupMatchWinner(groupKey, matchIdx, teamNum) {
+        let m = gBracket[groupKey].matches[matchIdx];
+        if (!m.t1 || !m.t2 || m.winner) return;
+
+        m.winner = teamNum === 1 ? m.t1 : m.t2;
+        m.loser = teamNum === 1 ? m.t2 : m.t1;
+        updateGroupStage();
+    }
+
+    function setFinalWinner(teamNum) {
+        let m = gBracket.final;
+        if (!m.t1 || !m.t2 || m.winner || !m.colorChoiceMade) return;
+        m.winner = teamNum === 1 ? m.t1 : m.t2;
+        m.loser = teamNum === 1 ? m.t2 : m.t1;
+        renderGroupStage();
+    }
+
+    function getStandings(group) {
+        let stats = group.teams.map(t => ({ team: t, w: 0, l: 0 }));
+        group.matches.forEach(m => {
+            if (m.winner) {
+                stats.find(s => s.team.id === m.winner.id).w++;
+                stats.find(s => s.team.id === m.loser.id).l++;
+            }
+        });
+        // Ordena por vitórias (decrescente)
+        stats.sort((a, b) => b.w - a.w);
+        return stats;
+    }
+
+    function forceFinalist(groupKey, teamId) {
+        let group = gBracket[groupKey];
+        let team = group.teams.find(t => t.id === teamId);
+        if(team) {
+            group.finalist = team;
+            updateGroupStage();
+        }
+    }
+
+    function updateGroupStage() {
+        ['groupA', 'groupB'].forEach(gKey => {
+            let group = gBracket[gKey];
+            let stats = getStandings(group);
+            let gamesPlayed = group.matches.filter(m => m.winner).length;
+
+            // Se ainda não tivermos forçado um finalista manualmente num desempate
+            let leader = stats[0];
+            if (leader.w === 2) {
+                // Tem 2 vitórias, classificado direto
+                group.finalist = leader.team;
+            } else if (gamesPlayed === 3 && leader.w === 1) {
+                // Empate Triplo! Todos tem 1 vitória. Aguarda escolha manual via botão na UI.
+                // Não fazemos nada, mantemos o finalist atual se tiver, ou null.
+            } else {
+                group.finalist = null;
+            }
+        });
+
+        gBracket.final.t1 = gBracket.groupA.finalist;
+        gBracket.final.t2 = gBracket.groupB.finalist;
+
+        if (gBracket.final.winner && (gBracket.final.winner.id !== gBracket.final.t1?.id && gBracket.final.winner.id !== gBracket.final.t2?.id)) {
+            gBracket.final.winner = null; gBracket.final.loser = null;
+        }
+
+        if (!gBracket.final.t1 || !gBracket.final.t2) {
+            gBracket.final.colorChoiceMade = false;
+            gBracket.final.color1 = null; gBracket.final.color2 = null;
+        }
+
+        renderGroupStage();
+    }
+
+    //---------------------------------------------------------
+    // RENDERIZAÇÃO COMPARTILHADA (CARDS)
+    //---------------------------------------------------------
+    function generateMatchCardHTML(m, onclickT1, onclickT2) {
         const isMD3 = m.tag === 'MD3';
         const mdTag = `<div class="md-tag ${isMD3 ? 'bg-green-600 text-black shadow-[0_0_10px_rgba(34,197,94,0.5)]' : 'bg-black text-green-500'} border-zinc-700 border uppercase tracking-widest">${m.tag}</div>`;
 
-        if (mId === 'm6' && m.t1 && m.t2 && !m.colorChoiceMade) {
-            return `
-                <div class="dark-card border-yellow-500 p-5 w-64 shadow-[0_0_30px_rgba(234,179,8,0.3)] z-10 relative text-center mt-4">
-                    ${mdTag}
-                    <div class="text-[11px] text-yellow-500 font-black mb-3 uppercase tracking-widest">${m.title}</div>
-                    <p class="text-sm text-zinc-300 mb-4 leading-snug"><span class="font-black text-white text-lg">${m.t1.name}</span> <br/><span class="text-[10px] text-yellow-600 uppercase tracking-widest">(Invicto/Lado A)</span><br/><br/>Escolha o seu lado:</p>
-                    <div class="flex gap-3 justify-center">
-                        <button onclick="setFinalColors('blue')" class="flex-1 bg-blue-900/40 hover:bg-blue-600/60 text-blue-400 hover:text-white py-2.5 rounded-lg border border-blue-600 transition-all font-black shadow-[0_0_15px_rgba(37,99,235,0.3)]">BLUE</button>
-                        <button onclick="setFinalColors('red')" class="flex-1 bg-red-900/40 hover:bg-red-600/60 text-red-400 hover:text-white py-2.5 rounded-lg border border-red-600 transition-all font-black shadow-[0_0_15px_rgba(220,38,38,0.3)]">RED</button>
+        if (m.id === 'gf' || m.id === 'm6') {
+            if (m.t1 && m.t2 && !m.colorChoiceMade) {
+                return `
+                    <div class="dark-card border-yellow-500 p-5 w-64 shadow-[0_0_30px_rgba(234,179,8,0.3)] z-10 relative text-center mt-4">
+                        ${mdTag}
+                        <div class="text-[11px] text-yellow-500 font-black mb-3 uppercase tracking-widest">${m.title}</div>
+                        <p class="text-sm text-zinc-300 mb-4 leading-snug"><span class="font-black text-white text-lg">${m.t1.name}</span> <br/><span class="text-[10px] text-yellow-600 uppercase tracking-widest">(Grupo A / Invicto)</span><br/><br/>Escolha o seu lado:</p>
+                        <div class="flex gap-3 justify-center">
+                            <button onclick="setFinalColors('blue')" class="flex-1 bg-blue-900/40 hover:bg-blue-600/60 text-blue-400 hover:text-white py-2.5 rounded-lg border border-blue-600 transition-all font-black shadow-[0_0_15px_rgba(37,99,235,0.3)]">BLUE</button>
+                            <button onclick="setFinalColors('red')" class="flex-1 bg-red-900/40 hover:bg-red-600/60 text-red-400 hover:text-white py-2.5 rounded-lg border border-red-600 transition-all font-black shadow-[0_0_15px_rgba(220,38,38,0.3)]">RED</button>
+                        </div>
                     </div>
-                </div>
-            `;
+                `;
+            }
         }
 
-        const getBtnHTML = (team, color, isWinner, isLoser, teamNum) => {
+        const getBtnHTML = (team, color, isWinner, isLoser, onclickAction) => {
             let baseClasses = 'hover:bg-zinc-800 text-zinc-300 border-zinc-700/50 border cursor-pointer';
             let labelHtml = '';
 
@@ -620,20 +710,18 @@ SUP - Ceos CHALLENGER
                 labelHtml = `<span class="text-[9px] uppercase font-black tracking-widest text-red-400 bg-black/80 px-2 py-0.5 rounded-sm float-right mt-[1px]">RED</span>`;
             }
 
-            if (isLoser) {
-                baseClasses = 'opacity-30 text-zinc-500 bg-zinc-950 border-zinc-900 border cursor-default grayscale';
-            }
+            if (isLoser) { baseClasses = 'opacity-30 text-zinc-500 bg-zinc-950 border-zinc-900 border cursor-default grayscale'; }
 
             return `
-                <div class="p-2.5 rounded-lg transition-all ${baseClasses}" onclick="setMatchWinner('${mId}', ${teamNum})">
+                <div class="p-2.5 rounded-lg transition-all ${baseClasses}" onclick="${onclickAction}">
                     ${team ? team.name : '<span class="italic text-zinc-600 font-normal">A Definir</span>'}
                     ${team && color && !isLoser ? labelHtml : ''}
                 </div>
             `;
         };
 
-        const btn1 = getBtnHTML(m.t1, m.color1, m.winner?.id === m.t1?.id, m.winner && m.winner.id !== m.t1?.id, 1);
-        const btn2 = getBtnHTML(m.t2, m.color2, m.winner?.id === m.t2?.id, m.winner && m.winner.id !== m.t2?.id, 2);
+        const btn1 = getBtnHTML(m.t1, m.color1, m.winner?.id === m.t1?.id, m.winner && m.winner.id !== m.t1?.id, onclickT1);
+        const btn2 = getBtnHTML(m.t2, m.color2, m.winner?.id === m.t2?.id, m.winner && m.winner.id !== m.t2?.id, onclickT2);
 
         return `
             <div class="dark-card ${m.winner ? 'border-zinc-900' : 'border-zinc-700'} hover:border-zinc-400 rounded-2xl p-3.5 w-60 shadow-xl transition-all z-10 relative mt-4">
@@ -646,81 +734,129 @@ SUP - Ceos CHALLENGER
         `;
     }
 
-    function renderBracket() {
+    function renderBracketDoubleElim() {
         const container = document.getElementById('bracket-container');
-        
-        if (numTeams === 4) {
-            container.innerHTML = `
+        container.innerHTML = `
+            <div class="flex flex-col md:flex-row gap-12 items-center md:items-start pt-6">
                 <div class="flex flex-col gap-10 justify-center">
                     <div class="text-green-500 font-black uppercase text-xs tracking-widest text-center mb-[-15px]">Chave Superior</div>
-                    ${createMatchCard('m1')}
-                    ${createMatchCard('m2')}
+                    ${generateMatchCardHTML(dBracket.m1, "setMatchWinnerDoubleElim('m1', 1)", "setMatchWinnerDoubleElim('m1', 2)")}
+                    ${generateMatchCardHTML(dBracket.m2, "setMatchWinnerDoubleElim('m2', 1)", "setMatchWinnerDoubleElim('m2', 2)")}
                     
                     <div class="text-red-600 font-black uppercase text-xs tracking-widest text-center mb-[-15px] mt-6">Chave Inferior</div>
-                    ${createMatchCard('m4')}
+                    ${generateMatchCardHTML(dBracket.m4, "setMatchWinnerDoubleElim('m4', 1)", "setMatchWinnerDoubleElim('m4', 2)")}
                 </div>
-
                 <div class="flex flex-col gap-10 justify-start pt-14">
-                    ${createMatchCard('m3')}
+                    ${generateMatchCardHTML(dBracket.m3, "setMatchWinnerDoubleElim('m3', 1)", "setMatchWinnerDoubleElim('m3', 2)")}
                     <div class="h-[104px]"></div>
-                    ${createMatchCard('m5')}
+                    ${generateMatchCardHTML(dBracket.m5, "setMatchWinnerDoubleElim('m5', 1)", "setMatchWinnerDoubleElim('m5', 2)")}
+                </div>
+                <div class="flex flex-row justify-center items-center pt-[170px] gap-8 relative">
+                    ${generateMatchCardHTML(dBracket.m6, "setMatchWinnerDoubleElim('m6', 1)", "setMatchWinnerDoubleElim('m6', 2)")}
+                    ${dBracket.m6.winner ? `
+                        <div class="animate-bounce text-center shrink-0 ml-4 mt-8">
+                            <div class="text-6xl mb-2 drop-shadow-lg">🏆</div>
+                            <div class="text-green-400 font-black text-3xl text-center shadow-black drop-shadow-xl tracking-tighter">CAMPEÃO</div>
+                            <div class="text-white font-black text-2xl text-center mt-2 dark-card bg-green-950 px-8 py-3 rounded-full border-2 border-green-500 shadow-[0_0_30px_rgba(34,197,94,0.3)]">${dBracket.m6.winner.name}</div>
+                        </div>
+                    ` : ''}
+                </div>
+            </div>
+        `;
+    }
+
+    function renderGroupStage() {
+        const container = document.getElementById('bracket-container');
+
+        const generateGroupColumn = (groupKey) => {
+            const group = gBracket[groupKey];
+            const stats = getStandings(group);
+            const gamesPlayed = group.matches.filter(m => m.winner).length;
+            const needsTiebreaker = (gamesPlayed === 3 && stats[0].w === 1);
+
+            let tableRows = stats.map(s => {
+                const isFinalist = group.finalist?.id === s.team.id;
+                let actionHTML = '';
+                
+                if (isFinalist) {
+                    actionHTML = `<span class="text-green-500 font-black text-xs uppercase tracking-widest bg-green-900/30 px-2 py-1 rounded">Finalista</span>`;
+                } else if (needsTiebreaker && !group.finalist) {
+                    actionHTML = `<button onclick="forceFinalist('${groupKey}', ${s.team.id})" class="text-xs bg-yellow-600 hover:bg-yellow-500 text-black font-black px-2 py-1 rounded uppercase tracking-wider transition">🏆 Avançar</button>`;
+                } else if (!isFinalist && group.finalist) {
+                    actionHTML = `<span class="text-zinc-600 text-xs uppercase font-bold">Eliminado</span>`;
+                }
+
+                return `
+                    <tr class="${isFinalist ? 'bg-green-900/20' : ''}">
+                        <td class="font-bold ${isFinalist ? 'text-green-400' : 'text-zinc-300'}">${s.team.name}</td>
+                        <td class="text-center font-black">${s.w}</td>
+                        <td class="text-center text-zinc-500">${s.l}</td>
+                        <td class="text-right">${actionHTML}</td>
+                    </tr>
+                `;
+            }).join('');
+
+            let matchesHTML = group.matches.map((m, idx) => {
+                return generateMatchCardHTML(m, `setGroupMatchWinner('${groupKey}', ${idx}, 1)`, `setGroupMatchWinner('${groupKey}', ${idx}, 2)`);
+            }).join('');
+
+            return `
+                <div class="flex flex-col gap-6 w-[280px]">
+                    <div class="dark-card p-4 border-zinc-800 shadow-md">
+                        <h4 class="text-green-500 font-black uppercase tracking-widest text-center mb-3 text-sm">${group.title}</h4>
+                        <table class="w-full text-left standings-table">
+                            <thead><tr><th>Time</th><th class="text-center w-8">V</th><th class="text-center w-8">D</th><th class="text-right w-20">Status</th></tr></thead>
+                            <tbody>${tableRows}</tbody>
+                        </table>
+                    </div>
+                    <div class="flex flex-col gap-6 items-center">
+                        ${matchesHTML}
+                    </div>
+                </div>
+            `;
+        };
+
+        container.innerHTML = `
+            <div class="flex flex-col lg:flex-row gap-16 justify-center items-start pt-6 w-full max-w-6xl">
+                ${generateGroupColumn('groupA')}
+                
+                <div class="flex flex-col justify-center items-center gap-4 mt-8 lg:mt-32">
+                    <div class="w-[2px] h-16 bg-gradient-to-b from-transparent to-green-600 hidden lg:block"></div>
+                    ${generateMatchCardHTML(gBracket.final, "setFinalWinner(1)", "setFinalWinner(2)")}
+                    ${gBracket.final.winner ? `
+                        <div class="animate-bounce text-center shrink-0 mt-6">
+                            <div class="text-6xl mb-2 drop-shadow-lg">🏆</div>
+                            <div class="text-green-400 font-black text-3xl text-center shadow-black drop-shadow-xl tracking-tighter">CAMPEÃO</div>
+                            <div class="text-white font-black text-2xl text-center mt-2 dark-card bg-green-950 px-8 py-3 rounded-full border-2 border-green-500 shadow-[0_0_30px_rgba(34,197,94,0.3)]">${gBracket.final.winner.name}</div>
+                        </div>
+                    ` : ''}
                 </div>
 
-                <div class="flex flex-row justify-center items-center pt-[170px] gap-8 relative">
-                    ${createMatchCard('m6')}
-                    ${dBracket.m6.winner ? `
-                        <div class="animate-bounce text-center shrink-0 ml-4">
-                            <div class="text-6xl mb-2 drop-shadow-lg">🏆</div>
-                            <div class="text-green-400 font-black text-3xl text-center shadow-black drop-shadow-xl tracking-tighter">CAMPEÃO</div>
-                            <div class="text-white font-black text-2xl text-center mt-2 dark-card bg-green-950 px-8 py-3 rounded-full border-2 border-green-500 shadow-[0_0_30px_rgba(34,197,94,0.3)]">${dBracket.m6.winner.name}</div>
-                        </div>
-                    ` : ''}
-                </div>
-            `;
-        } else {
-            // Nova estrutura de 6 Times Real e Limpa em Colunas Horizontais
-            container.innerHTML = `
-                <div class="flex flex-col md:flex-row gap-12 items-center md:items-start min-w-max pb-10 mt-6">
-                    <div class="flex flex-col gap-10 justify-center">
-                        <div class="text-zinc-500 font-black uppercase text-[10px] tracking-widest text-center mb-[-15px]">Quartas de Final</div>
-                        ${createMatchCard('m1')}
-                        ${createMatchCard('m2')}
-                    </div>
-                    <div class="flex flex-col gap-10 justify-center">
-                        <div class="text-zinc-500 font-black uppercase text-[10px] tracking-widest text-center mb-[-15px]">Semifinais</div>
-                        ${createMatchCard('m3')}
-                        ${createMatchCard('m4')}
-                    </div>
-                    <div class="flex flex-col gap-10 justify-center">
-                        <div class="text-green-500 font-black uppercase text-[10px] tracking-widest text-center mb-[-15px]">Grande Final</div>
-                        ${createMatchCard('m6')}
-                        <div class="text-zinc-500 font-black uppercase text-[10px] tracking-widest text-center mb-[-15px] mt-2">Disputa 3º Lugar</div>
-                        ${createMatchCard('m5')}
-                    </div>
-                    ${dBracket.m6.winner ? `
-                        <div class="animate-bounce text-center shrink-0 self-center ml-4 mt-8">
-                            <div class="text-6xl mb-2 drop-shadow-lg">🏆</div>
-                            <div class="text-green-400 font-black text-3xl text-center shadow-black drop-shadow-xl tracking-tighter">CAMPEÃO</div>
-                            <div class="text-white font-black text-2xl text-center mt-2 dark-card bg-green-950 px-8 py-3 rounded-full border-2 border-green-500 shadow-[0_0_30px_rgba(34,197,94,0.3)]">${dBracket.m6.winner.name}</div>
-                        </div>
-                    ` : ''}
-                </div>
-            `;
-        }
+                ${generateGroupColumn('groupB')}
+            </div>
+        `;
     }
 
     function resetBracket() {
-        if(!confirm("Tem certeza que deseja apagar os resultados do chaveamento?")) return;
-        const matches = ['m1', 'm2', 'm3', 'm4', 'm5', 'm6'];
-        matches.forEach(m => {
-            dBracket[m].winner = null;
-            dBracket[m].loser = null;
-        });
-        updateBracket();
+        if(!confirm("Tem certeza que deseja apagar os resultados de todos os jogos?")) return;
+        if (numTeams === 4) {
+            const matches = ['m1', 'm2', 'm3', 'm4', 'm5', 'm6'];
+            matches.forEach(m => { dBracket[m].winner = null; dBracket[m].loser = null; });
+            updateBracketDoubleElim();
+        } else {
+            ['groupA', 'groupB'].forEach(g => {
+                gBracket[g].matches.forEach(m => { m.winner = null; m.loser = null; });
+                gBracket[g].finalist = null;
+            });
+            gBracket.final.winner = null; gBracket.final.loser = null;
+            updateGroupStage();
+        }
     }
 
     function exportToCSV() {
-        if (!dBracket.m6.winner) {
+        let finalMatch = numTeams === 4 ? dBracket.m6 : gBracket.final;
+
+        if (!finalMatch.winner) {
             alert("Atenção: Você precisa terminar o campeonato definindo o Vencedor da Grande Final antes de exportar a planilha de resultados!");
             return;
         }
@@ -734,13 +870,21 @@ SUP - Ceos CHALLENGER
                 { pos: "4º Lugar", team: dBracket.m4.loser }
             ];
         } else {
+            // Grupos standings
+            let stA = getStandings(gBracket.groupA);
+            let stB = getStandings(gBracket.groupB);
+            
+            // Filtra os finalistas da tabela do grupo para não duplicar
+            let restA = stA.filter(s => s.team.id !== gBracket.final.winner.id && s.team.id !== gBracket.final.loser.id);
+            let restB = stB.filter(s => s.team.id !== gBracket.final.winner.id && s.team.id !== gBracket.final.loser.id);
+
             standings = [
-                { pos: "1º Lugar", team: dBracket.m6.winner },
-                { pos: "2º Lugar", team: dBracket.m6.loser },
-                { pos: "3º Lugar", team: dBracket.m5.winner },
-                { pos: "4º Lugar", team: dBracket.m5.loser },
-                { pos: "5º/6º Lugar", team: dBracket.m1.loser },
-                { pos: "5º/6º Lugar", team: dBracket.m2.loser }
+                { pos: "1º Lugar", team: gBracket.final.winner },
+                { pos: "2º Lugar", team: gBracket.final.loser },
+                { pos: "Fase de Grupos", team: restA[0]?.team },
+                { pos: "Fase de Grupos", team: restB[0]?.team },
+                { pos: "Fase de Grupos", team: restA[1]?.team },
+                { pos: "Fase de Grupos", team: restB[1]?.team }
             ];
         }
 
@@ -750,22 +894,15 @@ SUP - Ceos CHALLENGER
         standings.forEach(s => {
             if (s.team) {
                 const teamPlayers = teams[s.team.id];
-                
                 const getPlayerName = (lane) => {
                     const p = teamPlayers.find(pl => pl.lane === lane);
                     return p ? p.name : "Vago";
                 };
 
                 const row = [
-                    s.pos,
-                    s.team.name,
-                    getPlayerName('TOP'),
-                    getPlayerName('JG'),
-                    getPlayerName('MID'),
-                    getPlayerName('ADC'),
-                    getPlayerName('SUP')
+                    s.pos, s.team.name, getPlayerName('TOP'), getPlayerName('JG'),
+                    getPlayerName('MID'), getPlayerName('ADC'), getPlayerName('SUP')
                 ].join(",");
-                
                 csvContent += row + "\n";
             }
         });
